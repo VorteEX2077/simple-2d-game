@@ -14,13 +14,15 @@ public class GamePanel extends JPanel {
     boolean isGameRunning;
     boolean isReachedBottom;
     boolean isReachedTop = true;
-    GamePanel(){
+    String[] sides = {"TOP", "BOTTOM", "RIGHT", "LEFT"};
+
+    GamePanel() {
         isReachedLeftEnd = true;
         circleXCords = 20;
         circleYCords = 75;
         speed = 5;
         deltaDirection = 5;
-        circleCollision = "NONE";
+        circleCollision = "BOTTOM";
         isGameRunning = true;
         //System.out.println("gsame started");
     }
@@ -39,28 +41,6 @@ public class GamePanel extends JPanel {
         g.fillOval(circleXCords, circleYCords, 50, 50);
 
         checkBallCollision();
-        switch (circleCollision) {
-            case "NONE" -> {
-
-            }
-            case "TOP" -> {
-                circleYCords = circleYCords + speed;
-                circleXCords = circleXCords + deltaDirection;
-            }
-            case "BOTTOM" -> {
-                circleYCords = circleYCords - speed;
-                circleXCords = circleXCords - deltaDirection;
-            }
-            case "LEFT" -> {
-                circleXCords = circleXCords + deltaDirection;
-                circleYCords = circleYCords + speed;
-            }
-            case "RIGHT" -> {
-                circleXCords = circleXCords - deltaDirection;
-                circleYCords = circleYCords - speed;
-            }
-        }
-
 //        if(isReachedBottom){
 //            circleYCords = circleYCords - speed;// Going UP
 //            if(circleYCords <= 65) {
@@ -112,31 +92,60 @@ public class GamePanel extends JPanel {
         //System.out.println(isReachedLeftEnd + " " + isReachedRightEnd);
     }
 
-    public void checkBallCollision(){
-        if(circleYCords <= 65){
-            circleCollision = "TOP";
-            speed = random.nextInt(5,20);
-            deltaDirection = random.nextInt(5,10);
-        } else if (circleYCords >= 450) {
-            circleCollision = "BOTTOM";
-            speed = random.nextInt(5,20);
-            deltaDirection = random.nextInt(5,10);
-        } else if (circleXCords <= 30) {
-            circleCollision = "LEFT";
-            speed = random.nextInt(5,20);
-            deltaDirection = random.nextInt(5,10);
-        } else if (circleXCords >= 700) {
-            circleCollision = "RIGHT";
-            speed = random.nextInt(5,20);
-            deltaDirection = random.nextInt(5,10);
+    public void shootBallToSide(String side) {
+        switch (side) {
+            case "NONE" -> {
+
+            }
+            case "TOP" -> {
+                circleYCords = circleYCords - speed;
+                //circleXCords = circleXCords + deltaDirection;
+            }
+            case "BOTTOM" -> {
+                circleYCords = circleYCords + speed;
+                //circleXCords = circleXCords - deltaDirection;
+            }
+            case "LEFT" -> {
+                circleXCords = circleXCords - speed;
+                //circleYCords = circleYCords + speed;
+            }
+            case "RIGHT" -> {
+                circleXCords = circleXCords + speed;
+                //circleYCords = circleYCords - speed;
+            }
         }
     }
 
-    public void startGame(){
-        while(isGameRunning){
+    public void checkBallCollision() {
+        String a = null;
+        if (circleYCords <= 65) {
+            circleCollision = "TOP";
+             a = sides[random.nextInt(0, 4)];
+            shootBallToSide(a);
+        }
+        if (circleYCords >= 440) {
+            circleCollision = "BOTTOM";
+             a = sides[random.nextInt(0, 4)];
+            shootBallToSide(a);
+        }
+        if (circleXCords <= 30) {
+            circleCollision = "LEFT";
+             a = sides[random.nextInt(0, 4)];
+            shootBallToSide(a);
+        }
+        if (circleXCords >= 700) {
+            circleCollision = "RIGHT";
+             a = sides[random.nextInt(0, 4)];
+            shootBallToSide(a);
+        }
+        System.out.println(circleCollision + "-->" + a + " - " + circleYCords + "," + circleXCords);
+    }
+
+    public void startGame() {
+        while (isGameRunning) {
             repaint();
             try {
-                Thread.sleep(10);
+                Thread.sleep(50);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
