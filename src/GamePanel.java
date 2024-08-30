@@ -1,8 +1,10 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
 import java.util.Random;
 
-public class GamePanel extends JPanel {
+public class GamePanel extends JPanel implements MouseMotionListener {
 
     Random random = new Random();
     String circleCollision;
@@ -10,6 +12,8 @@ public class GamePanel extends JPanel {
     int speed;
     int circleYCords;
     int circleXCords;
+    int playerX;
+    int playerY;
     boolean isReachedRightEnd;
     boolean isReachedLeftEnd;
     boolean isGameRunning;
@@ -24,30 +28,20 @@ public class GamePanel extends JPanel {
         speed = 5;
         deltaDirection = 5;
         circleCollision = "BOTTOM";
+        playerX = 400 - 30;
+        playerY = 300 - 30;
         isGameRunning = true;
+        addMouseMotionListener(this);
     }
 
-    @Override
-    public void paint(Graphics g) {
-        super.paint(g);
 
-        setBackground(Color.black);
-        g.setColor(Color.white);
-        g.fillRect(20, 50, 750, 15);
-        g.fillRect(20, 500, 750, 15);
-        g.fillRect(755, 65, 15, 450);
-        g.fillRect(20, 65, 15, 450);
-        g.setColor(Color.red);
-        g.fillOval(circleXCords, circleYCords, 50, 50);
-
-
+    public void ballMovement(){
         if(isReachedBottom){
             circleYCords = circleYCords - speed;// Going UP
             if(circleYCords <= 65) {
                 isReachedBottom = false;
                 isReachedTop = true;
-                speed = random.nextInt(5,20);
-                deltaDirection = random.nextInt(5,10);
+                changeSpeed(); // method call
             }
             if(isReachedRightEnd){
                 circleXCords = circleXCords - deltaDirection;
@@ -76,7 +70,7 @@ public class GamePanel extends JPanel {
             changeSpeed();
         }
         if(isReachedRightEnd){
-           circleXCords = circleXCords - deltaDirection;
+            circleXCords = circleXCords - deltaDirection;
         }
         if(circleXCords <= 30){
             isReachedLeftEnd = true;
@@ -86,12 +80,35 @@ public class GamePanel extends JPanel {
         if(isReachedLeftEnd){
             circleXCords = circleXCords + deltaDirection;
         }
+    }
+
+    @Override
+    public void paint(Graphics g) {
+        super.paint(g);
+
+        setBackground(Color.black);
+        //sides
+        g.setColor(Color.white);
+        g.fillRect(20, 50, 750, 15); //TOP
+        g.fillRect(20, 500, 750, 15);//BOTTOM
+        g.fillRect(755, 65, 15, 450);//RIGHT
+        g.fillRect(20, 65, 15, 450);//LEFT
+
+        //ball movement
+        g.setColor(Color.red);
+        g.fillOval(circleXCords, circleYCords, 50, 50);
+        ballMovement();
+
+        //player
+        g.setColor(Color.green);
+        g.fillRect(playerX, playerY, 30, 30);
 
         //System.out.println("Speed:" + speed);
         //System.out.println(isReachedLeftEnd + " " + isReachedRightEnd);
     }
 
-    private void changeSpeed() {
+    // this is a method definition
+    public void changeSpeed() {
         speed = random.nextInt(10, 15);
         deltaDirection = random.nextInt(5, 10);
     }
@@ -100,10 +117,21 @@ public class GamePanel extends JPanel {
         while (isGameRunning) {
             repaint();
             try {
-                Thread.sleep(8);
+                Thread.sleep(20);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
         }
+    }
+
+
+    @Override
+    public void mouseDragged(MouseEvent e) {
+    }
+
+    @Override
+    public void mouseMoved(MouseEvent e) {
+        playerX = e.getX();
+        playerY = e.getY();
     }
 }
