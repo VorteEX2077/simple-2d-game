@@ -2,6 +2,10 @@ import javax.swing.*;
 import java.awt.*;
 
 public class Window {
+
+    public static int WIDTH = 800;
+    public static int HEIGHT = 600;
+
     GamePanel gamePanel = new GamePanel();
     Window(){
 
