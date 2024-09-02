@@ -2,6 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
+import java.awt.geom.Ellipse2D;
 import java.util.Random;
 
 public class GamePanel extends JPanel implements MouseMotionListener {
@@ -14,17 +15,22 @@ public class GamePanel extends JPanel implements MouseMotionListener {
     int circleXCords;
     int playerX;
     int playerY;
+    boolean gameOver;
     boolean isReachedRightEnd;
     boolean isReachedLeftEnd;
     boolean isGameRunning;
     boolean isReachedBottom;
     boolean isReachedTop = true;
+    Ellipse2D ellipse;
     String[] sides = {"TOP", "BOTTOM", "RIGHT", "LEFT"};
+    int counter;
 
     GamePanel() {
         isReachedLeftEnd = true;
         circleXCords = Window.WIDTH / 2;
         circleYCords = 75;
+        System.out.println(circleXCords);
+        ellipse = new Ellipse2D.Float(circleXCords, circleYCords, 50, 50);
         speed = 5;
         deltaDirection = 5;
         circleCollision = "BOTTOM";
@@ -86,6 +92,13 @@ public class GamePanel extends JPanel implements MouseMotionListener {
     public void paint(Graphics g) {
         super.paint(g);
 
+        gameOver();
+        ellipse.setFrame(circleXCords, circleYCords, 50, 50);
+        gameOver = ellipse.intersects(playerX, playerY,30, 30);
+
+
+        g.drawLine(20, 500, circleXCords, circleYCords);
+
         setBackground(Color.black);
         //sides
         g.setColor(Color.white);
@@ -121,6 +134,11 @@ public class GamePanel extends JPanel implements MouseMotionListener {
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
+        }
+    }
+
+    public void gameOver(){
+        if(gameOver == true){
         }
     }
 
