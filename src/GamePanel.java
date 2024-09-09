@@ -23,13 +23,17 @@ public class GamePanel extends JPanel implements MouseMotionListener {
     boolean isReachedTop = true;
     Ellipse2D ellipse;
     String[] sides = {"TOP", "BOTTOM", "RIGHT", "LEFT"};
-    int counter;
+    JButton button;
+    int score;
+    Window window;
 
-    GamePanel() {
+    GamePanel(Window window) {
+        this.window = window;
         isReachedLeftEnd = true;
+        button = new JButton();
         circleXCords = Window.WIDTH / 2;
         circleYCords = 75;
-        System.out.println(circleXCords);
+//        System.out.println(circleXCords);
         ellipse = new Ellipse2D.Float(circleXCords, circleYCords, 50, 50);
         speed = 5;
         deltaDirection = 5;
@@ -41,49 +45,49 @@ public class GamePanel extends JPanel implements MouseMotionListener {
     }
 
 
-    public void ballMovement(){
-        if(isReachedBottom){
+    public void ballMovement() {
+        if (isReachedBottom) {
             circleYCords = circleYCords - speed;// Going UP
-            if(circleYCords <= 65) {
+            if (circleYCords <= 65) {
                 isReachedBottom = false;
                 isReachedTop = true;
                 changeSpeed(); // method call
             }
-            if(isReachedRightEnd){
+            if (isReachedRightEnd) {
                 circleXCords = circleXCords - deltaDirection;
             }
-            if(isReachedLeftEnd){
+            if (isReachedLeftEnd) {
                 circleXCords = circleXCords + deltaDirection;
             }
         }
-        if(isReachedTop) {
+        if (isReachedTop) {
             circleYCords = circleYCords + speed;   // GOING Down
-            if(circleYCords >= 450){
+            if (circleYCords >= 450) {
                 isReachedBottom = true;
                 isReachedTop = false;
                 changeSpeed();
             }
-            if(isReachedRightEnd){
+            if (isReachedRightEnd) {
                 circleXCords = circleXCords - deltaDirection;
             }
-            if(isReachedLeftEnd){
+            if (isReachedLeftEnd) {
                 circleXCords = circleXCords + deltaDirection;
             }
         }
-        if(circleXCords >= 700){
+        if (circleXCords >= 700) {
             isReachedRightEnd = true;
             isReachedLeftEnd = false;
             changeSpeed();
         }
-        if(isReachedRightEnd){
+        if (isReachedRightEnd) {
             circleXCords = circleXCords - deltaDirection;
         }
-        if(circleXCords <= 30){
+        if (circleXCords <= 30) {
             isReachedLeftEnd = true;
             isReachedRightEnd = false;
             changeSpeed();
         }
-        if(isReachedLeftEnd){
+        if (isReachedLeftEnd) {
             circleXCords = circleXCords + deltaDirection;
         }
     }
@@ -92,12 +96,12 @@ public class GamePanel extends JPanel implements MouseMotionListener {
     public void paint(Graphics g) {
         super.paint(g);
 
-        gameOver();
+        gameOver(g);
         ellipse.setFrame(circleXCords, circleYCords, 50, 50);
-        gameOver = ellipse.intersects(playerX, playerY,30, 30);
+        gameOver = ellipse.intersects(playerX, playerY, 30, 30);
 
 
-        g.drawLine(20, 500, circleXCords, circleYCords);
+        //g.drawLine(20, 500, circleXCords, circleYCords);
 
         setBackground(Color.black);
         //sides
@@ -108,13 +112,16 @@ public class GamePanel extends JPanel implements MouseMotionListener {
         g.fillRect(20, 65, 15, 450);//LEFT
 
         //ball movement
-        g.setColor(Color.red);
-        g.fillOval(circleXCords, circleYCords, 50, 50);
-        ballMovement();
+        if(!gameOver) {
+            g.setColor(Color.red);
+            g.fillOval(circleXCords, circleYCords, 50, 50);
+            ballMovement();
 
-        //player
-        g.setColor(Color.green);
-        g.fillRect(playerX, playerY, 30, 30);
+            //player
+            g.setColor(Color.green);
+            g.fillRect(playerX, playerY, 30, 30);
+            //System.out.println(playerX + ", " + playerY);
+        }
 
         //System.out.println("Speed:" + speed);
         //System.out.println(isReachedLeftEnd + " " + isReachedRightEnd);
@@ -137,8 +144,15 @@ public class GamePanel extends JPanel implements MouseMotionListener {
         }
     }
 
-    public void gameOver(){
-        if(gameOver == true){
+    public void gameOver(Graphics g) {
+        if (gameOver) {
+            isGameRunning = false;
+            g.setColor(Color.red);
+            g.setFont(new Font("Arial", Font.BOLD, 50));
+            g.drawString("Game Over", Window.WIDTH  / 2 - 140, Window.HEIGHT / 2);
+
+            window.gameOver();
+
         }
     }
 
@@ -149,7 +163,12 @@ public class GamePanel extends JPanel implements MouseMotionListener {
 
     @Override
     public void mouseMoved(MouseEvent e) {
-        playerX = e.getX();
-        playerY = e.getY();
+        if (e.getY() >= 65 && e.getY() <= 470) {
+            playerY = e.getY();
+
+        }
+        if(e.getX() <= 725 && e.getX() >= 35) {
+            playerX = e.getX();
+        }
     }
 }
