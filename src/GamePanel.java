@@ -112,7 +112,7 @@ public class GamePanel extends JPanel implements MouseMotionListener {
         g.fillRect(20, 65, 15, 450);//LEFT
 
         //ball movement
-        if(!gameOver) {
+        if (!gameOver) {
             g.setColor(Color.red);
             g.fillOval(circleXCords, circleYCords, 50, 50);
             ballMovement();
@@ -121,6 +121,9 @@ public class GamePanel extends JPanel implements MouseMotionListener {
             g.setColor(Color.green);
             g.fillRect(playerX, playerY, 30, 30);
             //System.out.println(playerX + ", " + playerY);
+        } else {
+            isGameRunning = false;
+            window.gameOver();
         }
 
         //System.out.println("Speed:" + speed);
@@ -134,7 +137,11 @@ public class GamePanel extends JPanel implements MouseMotionListener {
     }
 
     public void startGame() {
+        isGameRunning = true;
+        gameOver = false;
+
         while (isGameRunning) {
+
             repaint();
             try {
                 Thread.sleep(20);
@@ -145,15 +152,7 @@ public class GamePanel extends JPanel implements MouseMotionListener {
     }
 
     public void gameOver(Graphics g) {
-        if (gameOver) {
-            isGameRunning = false;
-            g.setColor(Color.red);
-            g.setFont(new Font("Arial", Font.BOLD, 50));
-            g.drawString("Game Over", Window.WIDTH  / 2 - 140, Window.HEIGHT / 2);
 
-            window.gameOver();
-
-        }
     }
 
 
@@ -167,7 +166,7 @@ public class GamePanel extends JPanel implements MouseMotionListener {
             playerY = e.getY();
 
         }
-        if(e.getX() <= 725 && e.getX() >= 35) {
+        if (e.getX() <= 725 && e.getX() >= 35) {
             playerX = e.getX();
         }
     }
