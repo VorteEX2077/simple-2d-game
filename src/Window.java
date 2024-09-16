@@ -50,11 +50,10 @@ public class Window implements ActionListener {
 
     public void gameOver(){
         System.out.println("GAEM OVER");
-//        jFrame.getContentPane().remove(gamePanel);
-//        jFrame.getContentPane().add(gameOverPanel);
-//        jFrame.getContentPane().invalidate();
-//        jFrame.getContentPane().validate();
-//        jFrame.revalidate();
+        jFrame.getContentPane().removeAll();
+        jFrame.getContentPane().add(gameOverPanel);
+        jFrame.repaint();
+        jFrame.printAll(jFrame.getGraphics());
     }
 
     public static void main(String[] args) {
@@ -76,9 +75,10 @@ public class Window implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         gamePanel = new GamePanel(this); // created a new object gamepanel and named it the same name
-//        jFrame.remove(gameOverPanel);
-//        jFrame.add(gamePanel);
-//        jFrame.revalidate();
+        jFrame.getContentPane().removeAll();
+        jFrame.getContentPane().add(gamePanel);
+        jFrame.repaint();
+        jFrame.printAll(jFrame.getGraphics());
         setTimeout(() -> gamePanel.startGame(), 1000);
     }
 }
