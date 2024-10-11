@@ -66,6 +66,8 @@ public class GamePanel extends JPanel implements MouseMotionListener {
     }
 
 
+
+
     public void ballMovement() {
         if (isReachedBottom) {
             circleYCords = circleYCords - speed;// Going UP
@@ -230,8 +232,8 @@ public class GamePanel extends JPanel implements MouseMotionListener {
         g.setColor(Color.YELLOW);
         System.out.println(fruitCordsX + "," + fruitCordsY);
         if(isFruitEaten){
-            fruitCordsX = randomObj.nextInt(30,750);
-            fruitCordsY = randomObj.nextInt(70, 480);
+            fruitCordsX = randomObj.nextInt(50,750);
+            fruitCordsY = randomObj.nextInt(80, 480);
             starObj = createStar(fruitCordsX, fruitCordsY, 10, 20, 10, 50);
             score += 1;
             isFruitEaten = false;

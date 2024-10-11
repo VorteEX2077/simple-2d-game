@@ -13,6 +13,7 @@ public class Window extends JFrame {
     public static int HEIGHT = 600;
     GamePanel gamePanel;
     JPanel gameOverPanel;
+    JPanel mainMenuPanel;
     JButton restartButton;
     JLabel jLabel;
     BoxLayout layout;
@@ -22,6 +23,7 @@ public class Window extends JFrame {
     Window() {
         //the panels
         windowObj = this;
+        mainMenuPanel = new JPanel();
         gameOverPanel = new JPanel();
         gamePanel = new GamePanel(windowObj);
 
@@ -49,16 +51,16 @@ public class Window extends JFrame {
         jLabel.setText("GAME OVER");
         gameOverPanel.add(jLabel);
         gameOverPanel.add(restartButton);
+        mainMenu();
 
         add(gameOverPanel);
         add(gamePanel);
+        add(mainMenuPanel); // attaching Main menu panel to window
         setSize(800, 600);
         setBackground(Color.red);
         setVisible(true);
         setResizable(false);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-
-        gamePanel.startGame();
     }
 
     public void gameOver(){
@@ -69,7 +71,33 @@ public class Window extends JFrame {
         new Window();
     }
 
+    public void mainMenu(){
+        JButton buttonPlay = new JButton();
+        JButton buttonSettings = new JButton();
+        JButton buttonExit = new JButton();
+        buttonPlay.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                display(gamePanel);
+                setTimeout(new Runnable() {
+                    @Override
+                    public void run() {
+                        gamePanel.startGame();
+                    }
+                }, 500);
+            }
+        });
+        buttonPlay.setText("PLAY");
+        buttonSettings.setText("SETTINGS");
+        buttonExit.setText("EXIT");
+        mainMenuPanel.add(buttonPlay);
+        mainMenuPanel.add(buttonSettings);
+        mainMenuPanel.add(buttonExit);
+        mainMenuPanel.setBackground(Color.black);
 
+
+
+    }
 
     public void display(JPanel a){
 
