@@ -1,11 +1,8 @@
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
 
 public class Window extends JFrame {
 
@@ -14,21 +11,21 @@ public class Window extends JFrame {
     GamePanel gamePanel;
     JPanel gameOverPanel;
     JPanel mainMenuPanel;
+    JPanel settingsPanel;
     JButton restartButton;
     JLabel jLabel;
     BoxLayout layout;
     Window windowObj;
 
-
     Window() {
         //the panels
         windowObj = this;
         mainMenuPanel = new JPanel();
+        settingsPanel = new JPanel();
         gameOverPanel = new JPanel();
         gamePanel = new GamePanel(windowObj);
 
         jLabel = new JLabel();
-        layout = new BoxLayout(gameOverPanel, BoxLayout.Y_AXIS);
         restartButton = new JButton();
         restartButton.setText("restart");
         restartButton.addActionListener(new ActionListener() {
@@ -39,19 +36,15 @@ public class Window extends JFrame {
                 setTimeout(() -> gamePanel.startGame(), 100);
             }
         });
-        gameOverPanel.setBackground(Color.black);
-        gameOverPanel.setBorder(new EmptyBorder(new Insets(250, 250, 250, 200)));
-        gameOverPanel.setLayout(layout);
         jLabel.setBackground(Color.GREEN);
         jLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-
         jLabel.setPreferredSize(new Dimension(330, 100));
         jLabel.setFont(new Font("arial", Font.BOLD, 50));
         jLabel.setForeground(Color.red);
         jLabel.setText("GAME OVER");
-        gameOverPanel.add(jLabel);
-        gameOverPanel.add(restartButton);
-        mainMenu();
+        initSettingsPanel();
+        initGameOverPanel();
+        initMainMenuPanel();
 
         add(gameOverPanel);
         add(gamePanel);
@@ -62,6 +55,14 @@ public class Window extends JFrame {
         setResizable(false);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
     }
+    public void initGameOverPanel(){
+        layout = new BoxLayout(gameOverPanel, BoxLayout.Y_AXIS);
+        gameOverPanel.add(jLabel);
+        gameOverPanel.add(restartButton);
+        gameOverPanel.setBackground(Color.black);
+        gameOverPanel.setBorder(new EmptyBorder(new Insets(250, 250, 250, 200)));
+        gameOverPanel.setLayout(layout);
+    }
 
     public void gameOver(){
         display(gameOverPanel);
@@ -71,7 +72,7 @@ public class Window extends JFrame {
         new Window();
     }
 
-    public void mainMenu(){
+    public void initMainMenuPanel(){
         JButton buttonPlay = new JButton();
         JButton buttonSettings = new JButton();
         JButton buttonExit = new JButton();
@@ -87,6 +88,19 @@ public class Window extends JFrame {
                 }, 500);
             }
         });
+        buttonSettings.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                display(settingsPanel);
+            }
+        });
+        buttonExit.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.exit(0);
+            }
+        });
+
         buttonPlay.setText("PLAY");
         buttonSettings.setText("SETTINGS");
         buttonExit.setText("EXIT");
@@ -94,18 +108,34 @@ public class Window extends JFrame {
         mainMenuPanel.add(buttonSettings);
         mainMenuPanel.add(buttonExit);
         mainMenuPanel.setBackground(Color.black);
+    }
 
-
-
+    public void initSettingsPanel(){
+        JComboBox comboBox = new JComboBox<>();;
+        JLabel comboBoxLabel = new JLabel("screen resolution:");
+        comboBox.addItem("800x600");
+        comboBox.addItem("1920 x 1080");
+        comboBox.addItem("2560 x 1440");
+        JButton backButton = new JButton("back");
+        comboBoxLabel.setForeground(Color.ORANGE);
+        comboBoxLabel.setFont(new Font("ARIAL", Font.BOLD, 20));
+        settingsPanel.setBackground(Color.black);
+        settingsPanel.add(backButton);
+        settingsPanel.add(comboBoxLabel);
+        settingsPanel.add(comboBox);
+        backButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                display(mainMenuPanel);
+            }
+        });
     }
 
     public void display(JPanel a){
-
         getContentPane().removeAll();
         getContentPane().add(a);
         repaint();
         printAll(getGraphics());
-
     }
 
     public static void setTimeout(Runnable runnable, int delay){
