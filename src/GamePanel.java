@@ -5,7 +5,6 @@ import java.awt.event.MouseMotionListener;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Path2D;
 import java.util.Random;
-import java.util.concurrent.TimeUnit;
 
 public class GamePanel extends JPanel implements MouseMotionListener {
 
@@ -13,6 +12,7 @@ public class GamePanel extends JPanel implements MouseMotionListener {
     String circleCollision;
     final int PLAYER_WIDTH = 30;
     final int PLAYER_HEIGHT = 30;
+    final int Circle_Height_Width = 50;
 
     int deltaDirection;
     int speed;
@@ -27,11 +27,9 @@ public class GamePanel extends JPanel implements MouseMotionListener {
     boolean isReachedBottom;
     boolean isReachedTop = true;
     Ellipse2D ellipse;
-    String[] sides = {"TOP", "BOTTOM", "RIGHT", "LEFT"};
     JButton button;
     int level;
     Window window;
-    int paintCount = 120;
     int minutes = 2;
     int seconds = 0;
     Thread countThread;
@@ -43,6 +41,8 @@ public class GamePanel extends JPanel implements MouseMotionListener {
     double fruitCordsY;
     Shape starObj;
     int score = -1;
+    int wallsPadding = 50;
+    int topLeftX = wallsPadding, topLeftY = 60, bottomScreen;
 
     GamePanel(Window window) {
         this.window = window;
@@ -66,15 +66,13 @@ public class GamePanel extends JPanel implements MouseMotionListener {
     }
 
 
-
-
     public void ballMovement() {
         if (isReachedBottom) {
             circleYCords = circleYCords - speed;// Going UP
-            if (circleYCords <= 65) {
+            if (circleYCords <= topLeftY) {
                 isReachedBottom = false;
                 isReachedTop = true;
-                changeSpeed(); // method call
+                changeSpeedAndDirection(); // method call
             }
             if (isReachedRightEnd) {
                 circleXCords = circleXCords - deltaDirection;
@@ -85,10 +83,10 @@ public class GamePanel extends JPanel implements MouseMotionListener {
         }
         if (isReachedTop) {
             circleYCords = circleYCords + speed;   // GOING Down
-            if (circleYCords >= 450) {
+            if (circleYCords >= bottomScreen - Circle_Height_Width) {
                 isReachedBottom = true;
                 isReachedTop = false;
-                changeSpeed();
+                changeSpeedAndDirection();
             }
             if (isReachedRightEnd) {
                 circleXCords = circleXCords - deltaDirection;
@@ -100,15 +98,15 @@ public class GamePanel extends JPanel implements MouseMotionListener {
         if (circleXCords >= 700) {
             isReachedRightEnd = true;
             isReachedLeftEnd = false;
-            changeSpeed();
+            changeSpeedAndDirection();
         }
         if (isReachedRightEnd) {
             circleXCords = circleXCords - deltaDirection;
         }
-        if (circleXCords <= 30) {
+        if (circleXCords <= topLeftX + Circle_Height_Width) {
             isReachedLeftEnd = true;
             isReachedRightEnd = false;
-            changeSpeed();
+            changeSpeedAndDirection();
         }
         if (isReachedLeftEnd) {
             circleXCords = circleXCords + deltaDirection;
@@ -118,7 +116,6 @@ public class GamePanel extends JPanel implements MouseMotionListener {
     @Override
     public void paint(Graphics g) {
         super.paint(g);
-
         graphic2d = (Graphics2D) g;
         g.setColor(Color.green);
         g.setFont(new Font("ARIAL", Font.BOLD, 30));
@@ -130,14 +127,17 @@ public class GamePanel extends JPanel implements MouseMotionListener {
 
 
         //g.drawLine(20, 500, circleXCords, circleYCords);
-
+        bottomScreen = Window.HEIGHT - 80;
         setBackground(Color.black);
+
         //sides
         g.setColor(Color.red);
-        g.fillRect(20, 50, 750, 15); //TOP
-        g.fillRect(20, 500, 750, 15);//BOTTOM
-        g.fillRect(755, 65, 15, 450);//RIGHT
-        g.fillRect(20, 65, 15, 450);//LEFT
+        graphic2d.setStroke(new BasicStroke(10));
+        graphic2d.drawLine(topLeftX, topLeftY, Window.WIDTH - wallsPadding, topLeftY); //TOP
+        graphic2d.drawLine(topLeftX, bottomScreen, Window.WIDTH - wallsPadding, bottomScreen);//BOTTOM
+        graphic2d.drawLine(Window.WIDTH - wallsPadding, topLeftY,
+                Window.WIDTH - wallsPadding, bottomScreen);//RIGHT
+        graphic2d.drawLine(topLeftX, topLeftY, topLeftX, bottomScreen);//LEFT
 
         //will generate a fruit in a random area
         fruitGenerator(g);
@@ -145,7 +145,7 @@ public class GamePanel extends JPanel implements MouseMotionListener {
         //ball movement
         if (!gameOver) {
             g.setColor(Color.red);
-            g.fillOval(circleXCords, circleYCords, 50, 50);
+            g.fillOval(circleXCords, circleYCords, Circle_Height_Width, Circle_Height_Width);
             ballMovement();
 
             //player
@@ -168,7 +168,7 @@ public class GamePanel extends JPanel implements MouseMotionListener {
     }
 
     // this is a method definition
-    public void changeSpeed() {
+    public void changeSpeedAndDirection() {
         speed = random.nextInt(10, 15);
         deltaDirection = random.nextInt(5, 10);
     }
@@ -200,21 +200,17 @@ public class GamePanel extends JPanel implements MouseMotionListener {
                         level = level + 1;
                         minutes = 2;
                         seconds = 0;
-                        if(lvlSpeed <= 5) {
+                        if (lvlSpeed <= 5) {
                             // TODO: User wins the gmae: wins permanent trophy and its stored in file (hdd)
                             // FILE HANDLING IN JAVA
-                        }
-                        else{
+                        } else {
                             lvlSpeed = lvlSpeed - 1;
                         }
                     }
                     if (seconds % 60 == 0) {
                         minutes = minutes - 1;
                         seconds = 59;
-                    }
-
-
-                    else {
+                    } else {
                         seconds = seconds - 1;
                     }
                     try {
@@ -228,17 +224,17 @@ public class GamePanel extends JPanel implements MouseMotionListener {
         countThread.start();
     }
 
-    public void fruitGenerator(Graphics g){
+    public void fruitGenerator(Graphics g) {
         g.setColor(Color.YELLOW);
-        System.out.println(fruitCordsX + "," + fruitCordsY);
-        if(isFruitEaten){
-            fruitCordsX = randomObj.nextInt(50,750);
+        //System.out.println(fruitCordsX + "," + fruitCordsY);
+        if (isFruitEaten) {
+            fruitCordsX = randomObj.nextInt(50, 750);
             fruitCordsY = randomObj.nextInt(80, 480);
             starObj = createStar(fruitCordsX, fruitCordsY, 10, 20, 10, 50);
             score += 1;
             isFruitEaten = false;
         }
-        if(starObj.intersects(playerX, playerY, PLAYER_WIDTH, PLAYER_HEIGHT)){
+        if (starObj.intersects(playerX, playerY, PLAYER_WIDTH, PLAYER_HEIGHT)) {
             isFruitEaten = true;
         }
         graphic2d.fill(starObj);
@@ -246,33 +242,25 @@ public class GamePanel extends JPanel implements MouseMotionListener {
 
     private static Shape createStar(double centerX, double centerY,
                                     double innerRadius, double outerRadius, int numRays,
-                                    double startAngleRad)
-    {
+                                    double startAngleRad) {
         Path2D path = new Path2D.Double();
         double deltaAngleRad = Math.PI / numRays;
-        for (int i = 0; i < numRays * 2; i++)
-        {
+        for (int i = 0; i < numRays * 2; i++) {
             double angleRad = startAngleRad + i * deltaAngleRad;
             double ca = Math.cos(angleRad);
             double sa = Math.sin(angleRad);
             double relX = ca;
             double relY = sa;
-            if ((i & 1) == 0)
-            {
+            if ((i & 1) == 0) {
                 relX *= outerRadius;
                 relY *= outerRadius;
-            }
-            else
-            {
+            } else {
                 relX *= innerRadius;
                 relY *= innerRadius;
             }
-            if (i == 0)
-            {
+            if (i == 0) {
                 path.moveTo(centerX + relX, centerY + relY);
-            }
-            else
-            {
+            } else {
                 path.lineTo(centerX + relX, centerY + relY);
             }
         }

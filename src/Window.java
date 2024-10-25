@@ -1,8 +1,12 @@
+import org.w3c.dom.ls.LSOutput;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 
 public class Window extends JFrame {
 
@@ -52,7 +56,7 @@ public class Window extends JFrame {
         setSize(800, 600);
         setBackground(Color.red);
         setVisible(true);
-        setResizable(false);
+        //setResizable(false);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
     }
     public void initGameOverPanel(){
@@ -110,19 +114,48 @@ public class Window extends JFrame {
         mainMenuPanel.setBackground(Color.black);
     }
 
-    public void initSettingsPanel(){
+    public void initSettingsPanel() {
+        JCheckBox checkBox = new JCheckBox();
+        // JLabel of checkbox parameter customisation
+        JLabel checkBoxSound = new JLabel("Sound:");
+        checkBoxSound.setForeground(Color.ORANGE);
+        checkBoxSound.setFont(new Font("ARIAL", Font.BOLD, 20));
+
+        //ComaBox initilisation + customisation
         JComboBox comboBox = new JComboBox<>();;
         JLabel comboBoxLabel = new JLabel("screen resolution:");
-        comboBox.addItem("800x600");
+        comboBox.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+               if(e.getStateChange() == ItemEvent.SELECTED) {
+                   if(comboBox.getSelectedItem() == "800 x 600") {
+                       WIDTH = 800; HEIGHT = 600;
+                       setSize(WIDTH, HEIGHT);
+                   }
+                   else if (comboBox.getSelectedItem() == "1280 x 720") {
+                       WIDTH = 1280; HEIGHT = 720;
+                       setSize(WIDTH, HEIGHT);
+                   } else if (comboBox.getSelectedItem() == "1920 x 1080") {
+                       WIDTH = 1920; HEIGHT = 1080;
+                       setSize(WIDTH,HEIGHT);
+                   }
+               }
+            }
+
+        });
+        comboBox.addItem("800 x 600");
+        comboBox.addItem("1280 x 720");
         comboBox.addItem("1920 x 1080");
-        comboBox.addItem("2560 x 1440");
-        JButton backButton = new JButton("back");
         comboBoxLabel.setForeground(Color.ORANGE);
         comboBoxLabel.setFont(new Font("ARIAL", Font.BOLD, 20));
+        //back button + adding components
+        JButton backButton = new JButton("back");
         settingsPanel.setBackground(Color.black);
         settingsPanel.add(backButton);
         settingsPanel.add(comboBoxLabel);
         settingsPanel.add(comboBox);
+        settingsPanel.add(checkBoxSound);
+        settingsPanel.add(checkBox);
         backButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
