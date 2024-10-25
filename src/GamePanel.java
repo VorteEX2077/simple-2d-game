@@ -43,6 +43,7 @@ public class GamePanel extends JPanel implements MouseMotionListener {
     int score = -1;
     int wallsPadding = 50;
     int topLeftX = wallsPadding, topLeftY = 60, bottomScreen;
+    int test;
 
     GamePanel(Window window) {
         this.window = window;
@@ -83,7 +84,7 @@ public class GamePanel extends JPanel implements MouseMotionListener {
         }
         if (isReachedTop) {
             circleYCords = circleYCords + speed;   // GOING Down
-            if (circleYCords >= bottomScreen - Circle_Height_Width) {
+            if (circleYCords >= bottomScreen - Circle_Height_Width - 5) {
                 isReachedBottom = true;
                 isReachedTop = false;
                 changeSpeedAndDirection();
@@ -103,7 +104,7 @@ public class GamePanel extends JPanel implements MouseMotionListener {
         if (isReachedRightEnd) {
             circleXCords = circleXCords - deltaDirection;
         }
-        if (circleXCords <= topLeftX + Circle_Height_Width) {
+        if (circleXCords <= topLeftX) {
             isReachedLeftEnd = true;
             isReachedRightEnd = false;
             changeSpeedAndDirection();
@@ -160,11 +161,6 @@ public class GamePanel extends JPanel implements MouseMotionListener {
             countThread.interrupt();
             window.gameOver();
         }
-
-        //System.out.println("Speed:" + speed);
-        //System.out.println(isReachedLeftEnd + " " + isReachedRightEnd);
-
-
     }
 
     // this is a method definition
