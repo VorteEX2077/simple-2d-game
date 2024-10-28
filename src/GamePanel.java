@@ -96,7 +96,7 @@ public class GamePanel extends JPanel implements MouseMotionListener {
                 circleXCords = circleXCords + deltaDirection;
             }
         }
-        if (circleXCords >= 700) {
+        if (circleXCords >= Window.WIDTH - wallsPadding - Circle_Height_Width) {
             isReachedRightEnd = true;
             isReachedLeftEnd = false;
             changeSpeedAndDirection();
@@ -126,6 +126,9 @@ public class GamePanel extends JPanel implements MouseMotionListener {
         ellipse.setFrame(circleXCords, circleYCords, 50, 50);
         gameOver = ellipse.intersects(playerX, playerY, PLAYER_WIDTH, PLAYER_HEIGHT);
 
+        graphic2d.setColor(Color.CYAN);
+        graphic2d.drawLine(topLeftX, bottomScreen, playerX, playerY);
+
 
         //g.drawLine(20, 500, circleXCords, circleYCords);
         bottomScreen = Window.HEIGHT - 80;
@@ -133,7 +136,7 @@ public class GamePanel extends JPanel implements MouseMotionListener {
 
         //sides
         g.setColor(Color.red);
-        graphic2d.setStroke(new BasicStroke(10));
+        //graphic2d.setStroke(new BasicStroke(10));
         graphic2d.drawLine(topLeftX, topLeftY, Window.WIDTH - wallsPadding, topLeftY); //TOP
         graphic2d.drawLine(topLeftX, bottomScreen, Window.WIDTH - wallsPadding, bottomScreen);//BOTTOM
         graphic2d.drawLine(Window.WIDTH - wallsPadding, topLeftY,
@@ -271,11 +274,11 @@ public class GamePanel extends JPanel implements MouseMotionListener {
 
     @Override
     public void mouseMoved(MouseEvent e) {
-        if (e.getY() >= 65 && e.getY() <= 470) {
+        if (e.getY() >= topLeftY && e.getY() <= bottomScreen - PLAYER_HEIGHT) {
             playerY = e.getY();
 
         }
-        if (e.getX() <= 725 && e.getX() >= 35) {
+        if (e.getX() >= topLeftX && e.getX() <= Window.WIDTH - wallsPadding - PLAYER_WIDTH) {
             playerX = e.getX();
         }
     }
