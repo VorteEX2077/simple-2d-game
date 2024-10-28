@@ -28,9 +28,10 @@ public class GamePanel extends JPanel implements MouseMotionListener {
     boolean isReachedTop = true;
     Ellipse2D ellipse;
     JButton button;
+
     int level;
     Window window;
-    int minutes = 2;
+    int minutes = 1;
     int seconds = 0;
     Thread countThread;
     int lvlSpeed;
@@ -43,12 +44,14 @@ public class GamePanel extends JPanel implements MouseMotionListener {
     int score = -1;
     int wallsPadding = 50;
     int topLeftX = wallsPadding, topLeftY = 60, bottomScreen;
-    int test;
 
     GamePanel(Window window) {
         this.window = window;
         isReachedLeftEnd = true;
-        button = new JButton();
+        button = new JButton("pause");
+        setBounds(999, 214, 914, 316);
+        setLayout(null);
+        add(button);
         randomObj = new Random();
         circleXCords = Window.WIDTH / 2;
         level = 1;
@@ -120,14 +123,12 @@ public class GamePanel extends JPanel implements MouseMotionListener {
         graphic2d = (Graphics2D) g;
         g.setColor(Color.green);
         g.setFont(new Font("ARIAL", Font.BOLD, 30));
-        g.drawString("Score: " + score, 100, 30);
-        g.drawString("timer: " + minutes + ":" + seconds, 600, 30);
-        g.drawString("LEVEL " + level, Window.WIDTH / 2 - 50, 30);
+        g.drawString("Score: " + score, topLeftX , 30);
+        g.drawString("Level " + level, Window.WIDTH / 2 - 50, 30);
+        g.drawString("Timer: " + minutes + ":" + seconds, Window.WIDTH - wallsPadding - 170, 30);
         ellipse.setFrame(circleXCords, circleYCords, 50, 50);
         gameOver = ellipse.intersects(playerX, playerY, PLAYER_WIDTH, PLAYER_HEIGHT);
 
-        graphic2d.setColor(Color.CYAN);
-        graphic2d.drawLine(topLeftX, bottomScreen, playerX, playerY);
 
 
         //g.drawLine(20, 500, circleXCords, circleYCords);
@@ -197,7 +198,7 @@ public class GamePanel extends JPanel implements MouseMotionListener {
 //                    System.out.println("minutes "+minutes+" seconds "+seconds);
                     if (minutes <= 0 && seconds <= 0) {
                         level = level + 1;
-                        minutes = 2;
+                        minutes = 1;
                         seconds = 0;
                         if (lvlSpeed <= 5) {
                             // TODO: User wins the gmae: wins permanent trophy and its stored in file (hdd)
@@ -213,7 +214,7 @@ public class GamePanel extends JPanel implements MouseMotionListener {
                         seconds = seconds - 1;
                     }
                     try {
-                        Thread.sleep(100);
+                        Thread.sleep(1000);
                     } catch (InterruptedException e) {
                         break;
                     }
@@ -227,8 +228,8 @@ public class GamePanel extends JPanel implements MouseMotionListener {
         g.setColor(Color.YELLOW);
         //System.out.println(fruitCordsX + "," + fruitCordsY);
         if (isFruitEaten) {
-            fruitCordsX = randomObj.nextInt(50, 750);
-            fruitCordsY = randomObj.nextInt(80, 480);
+            fruitCordsX = randomObj.nextInt(topLeftX + 20, Window.WIDTH - wallsPadding - 20);
+            fruitCordsY = randomObj.nextInt(topLeftY + 20, bottomScreen - 20);
             starObj = createStar(fruitCordsX, fruitCordsY, 10, 20, 10, 50);
             score += 1;
             isFruitEaten = false;
