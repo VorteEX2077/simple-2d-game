@@ -31,8 +31,7 @@ public class GamePanel extends JPanel implements MouseMotionListener {
 
     int level;
     Window window;
-    int minutes = 1;
-    int seconds = 0;
+    int seconds = 10;
     Thread countThread;
     int lvlSpeed;
     boolean isFruitEaten;
@@ -44,6 +43,7 @@ public class GamePanel extends JPanel implements MouseMotionListener {
     int score = -1;
     int wallsPadding = 50;
     int topLeftX = wallsPadding, topLeftY = 60, bottomScreen;
+    int fruits = 5;
 
     GamePanel(Window window) {
         this.window = window;
@@ -123,17 +123,17 @@ public class GamePanel extends JPanel implements MouseMotionListener {
         graphic2d = (Graphics2D) g;
         g.setColor(Color.green);
         g.setFont(new Font("ARIAL", Font.BOLD, 30));
-        g.drawString("Score: " + score, topLeftX , 30);
+        g.drawString("Score: " + score, topLeftX, 30);
         g.drawString("Level " + level, Window.WIDTH / 2 - 50, 30);
-        g.drawString("Timer: " + minutes + ":" + seconds, Window.WIDTH - wallsPadding - 170, 30);
+        g.drawString("Timer: " + seconds, Window.WIDTH - wallsPadding - 170, 30);
         ellipse.setFrame(circleXCords, circleYCords, 50, 50);
         gameOver = ellipse.intersects(playerX, playerY, PLAYER_WIDTH, PLAYER_HEIGHT);
-
 
 
         //g.drawLine(20, 500, circleXCords, circleYCords);
         bottomScreen = Window.HEIGHT - 80;
         setBackground(Color.black);
+
 
         //sides
         g.setColor(Color.red);
@@ -161,9 +161,7 @@ public class GamePanel extends JPanel implements MouseMotionListener {
         }
         //Game over
         else {
-            isGameRunning = false;
-            countThread.interrupt();
-            window.gameOver();
+            stopGame();
         }
     }
 
@@ -171,6 +169,12 @@ public class GamePanel extends JPanel implements MouseMotionListener {
     public void changeSpeedAndDirection() {
         speed = random.nextInt(10, 15);
         deltaDirection = random.nextInt(5, 10);
+    }
+    public void stopGame(){
+        gameOver = true;
+        isGameRunning = false;
+        countThread.interrupt();
+        window.gameOver();
     }
 
 
@@ -194,25 +198,26 @@ public class GamePanel extends JPanel implements MouseMotionListener {
             @Override
             public void run() {
                 while (!countThread.isInterrupted()) {
-
-//                    System.out.println("minutes "+minutes+" seconds "+seconds);
-                    if (minutes <= 0 && seconds <= 0) {
-                        level = level + 1;
-                        minutes = 1;
-                        seconds = 0;
+                    if (seconds <= 0)  {
+                        System.out.println("works");
+                        if(score >= fruits) {
+                            System.out.println("works 2");
+                            level = level + 1;
+                            fruits = fruits + 5;
+                            seconds = 10;
+                        }
+                        else{
+                            stopGame();
+                        }
                         if (lvlSpeed <= 5) {
                             // TODO: User wins the gmae: wins permanent trophy and its stored in file (hdd)
                             // FILE HANDLING IN JAVA
                         } else {
                             lvlSpeed = lvlSpeed - 1;
                         }
-                    }
-                    if (seconds % 60 == 0) {
-                        minutes = minutes - 1;
-                        seconds = 59;
-                    } else {
+                    } else
                         seconds = seconds - 1;
-                    }
+
                     try {
                         Thread.sleep(1000);
                     } catch (InterruptedException e) {
