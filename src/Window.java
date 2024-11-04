@@ -32,6 +32,7 @@ public class Window extends JFrame {
         gamePanel = new GamePanel(windowObj); // fIRST oBJECT
 
         jLabel = new JLabel();
+        highScore = new JLabel();
         restartButton = new JButton();
         restartButton.setText("restart");
         restartButton.addActionListener(new ActionListener() {
@@ -79,6 +80,10 @@ public class Window extends JFrame {
     }
 
     public void initMainMenuPanel(){
+        //jlabels high score
+        highScore.setForeground(Color.ORANGE);
+        highScore.setFont(new Font("ARIAL", Font.BOLD, 25));
+        highScore.setText("HIGH SCORE: " + gamePanel.score);
         buttonPlay = new JButton();
         JButton buttonSettings = new JButton();
         JButton buttonExit = new JButton();
@@ -120,14 +125,16 @@ public class Window extends JFrame {
         gbc.insets = new Insets(10, 0, 10, 0); // Top, left, bottom, right padding
         // Add the first button
         gbc.gridy = 0; // Row 0
+        mainMenuPanel.add(highScore, gbc);
+        gbc.gridy = 1; // row 1
         mainMenuPanel.add(buttonPlay, gbc);
 
         // Add the second button
-        gbc.gridy = 1; // Row 1
+        gbc.gridy = 2; // Row 2
         mainMenuPanel.add(buttonSettings, gbc);
 
         // Add the third button
-        gbc.gridy = 2; // Row 2
+        gbc.gridy = 3; // Row 3
         mainMenuPanel.add(buttonExit, gbc);
     }
 

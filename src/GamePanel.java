@@ -43,7 +43,7 @@ public class GamePanel extends JPanel implements MouseMotionListener {
     double fruitCordsX;
     double fruitCordsY;
     Shape starObj;
-    int score = -1;
+    int score = 0;
     int wallsPadding = 50;
     int topLeftX = wallsPadding, topLeftY = 60, bottomScreen;
     int fruits = 5;
@@ -135,7 +135,7 @@ public class GamePanel extends JPanel implements MouseMotionListener {
         graphic2d = (Graphics2D) g;
         g.setColor(Color.green);
         g.setFont(new Font("ARIAL", Font.BOLD, 30));
-        g.drawString("Score: " + score, topLeftX, 30);
+        g.drawString("Score: " + (score - 1), topLeftX, 30);
         g.drawString("Level " + level, Window.WIDTH / 2 - 50, 30);
         g.drawString("Timer: " + seconds, Window.WIDTH - wallsPadding - 170, 30);
         ellipse.setFrame(circleXCords, circleYCords, 50, 50);
