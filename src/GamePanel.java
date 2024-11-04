@@ -1,5 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.awt.geom.Ellipse2D;
@@ -26,8 +28,9 @@ public class GamePanel extends JPanel implements MouseMotionListener {
     boolean isGameRunning;
     boolean isReachedBottom;
     boolean isReachedTop = true;
+    boolean isCountDownTimerRunning;
     Ellipse2D ellipse;
-    JButton button;
+    JButton btnPause;
 
     int level;
     Window window;
@@ -45,13 +48,22 @@ public class GamePanel extends JPanel implements MouseMotionListener {
     int topLeftX = wallsPadding, topLeftY = 60, bottomScreen;
     int fruits = 5;
 
+    //constructor of GamePanel
     GamePanel(Window window) {
         this.window = window;
         isReachedLeftEnd = true;
-        button = new JButton("pause");
-        setBounds(999, 214, 914, 316);
+        btnPause = new JButton("pause");
+        btnPause.setBounds(topLeftX + 150,20,70,30);
         setLayout(null);
-        add(button);
+        btnPause.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                isGameRunning = false;
+                isCountDownTimerRunning = false;
+                window.pauseMenu();
+            }
+        });
+        add(btnPause);
         randomObj = new Random();
         circleXCords = Window.WIDTH / 2;
         level = 1;
@@ -127,8 +139,10 @@ public class GamePanel extends JPanel implements MouseMotionListener {
         g.drawString("Level " + level, Window.WIDTH / 2 - 50, 30);
         g.drawString("Timer: " + seconds, Window.WIDTH - wallsPadding - 170, 30);
         ellipse.setFrame(circleXCords, circleYCords, 50, 50);
+        //player and ball collision check
         gameOver = ellipse.intersects(playerX, playerY, PLAYER_WIDTH, PLAYER_HEIGHT);
-
+        //collect the fruits
+        g.drawString("Collect " + fruits +  " fruits", Window.WIDTH / 2 - 100, 55);
 
         //g.drawLine(20, 500, circleXCords, circleYCords);
         bottomScreen = Window.HEIGHT - 80;
@@ -170,13 +184,13 @@ public class GamePanel extends JPanel implements MouseMotionListener {
         speed = random.nextInt(10, 15);
         deltaDirection = random.nextInt(5, 10);
     }
+
     public void stopGame(){
         gameOver = true;
         isGameRunning = false;
-        countThread.interrupt();
+        isCountDownTimerRunning = false;
         window.gameOver();
     }
-
 
     public void startGame() {
         isGameRunning = true;
@@ -194,10 +208,11 @@ public class GamePanel extends JPanel implements MouseMotionListener {
     }
 
     private void startCountdown() {
+        isCountDownTimerRunning = true;
         countThread = new Thread(new Runnable() {
             @Override
             public void run() {
-                while (!countThread.isInterrupted()) {
+                while (isCountDownTimerRunning) {
                     if (seconds <= 0)  {
                         System.out.println("works");
                         if(score >= fruits) {
@@ -210,7 +225,7 @@ public class GamePanel extends JPanel implements MouseMotionListener {
                             stopGame();
                         }
                         if (lvlSpeed <= 5) {
-                            // TODO: User wins the gmae: wins permanent trophy and its stored in file (hdd)
+                            // TODO: User wins the game: wins permanent trophy and its stored in file (hdd)
                             // FILE HANDLING IN JAVA
                         } else {
                             lvlSpeed = lvlSpeed - 1;

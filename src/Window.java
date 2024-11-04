@@ -18,8 +18,10 @@ public class Window extends JFrame {
     JPanel settingsPanel;
     JButton restartButton;
     JLabel jLabel;
+    JLabel highScore;
     BoxLayout layout;
     Window windowObj;
+    JButton buttonPlay;
 
     Window() {
         //the panels
@@ -27,7 +29,7 @@ public class Window extends JFrame {
         mainMenuPanel = new JPanel();
         settingsPanel = new JPanel();
         gameOverPanel = new JPanel();
-        gamePanel = new GamePanel(windowObj);
+        gamePanel = new GamePanel(windowObj); // fIRST oBJECT
 
         jLabel = new JLabel();
         restartButton = new JButton();
@@ -77,7 +79,7 @@ public class Window extends JFrame {
     }
 
     public void initMainMenuPanel(){
-        JButton buttonPlay = new JButton();
+        buttonPlay = new JButton();
         JButton buttonSettings = new JButton();
         JButton buttonExit = new JButton();
         buttonPlay.addActionListener(new ActionListener() {
@@ -108,10 +110,25 @@ public class Window extends JFrame {
         buttonPlay.setText("PLAY");
         buttonSettings.setText("SETTINGS");
         buttonExit.setText("EXIT");
-        mainMenuPanel.add(buttonPlay);
-        mainMenuPanel.add(buttonSettings);
-        mainMenuPanel.add(buttonExit);
         mainMenuPanel.setBackground(Color.black);
+        mainMenuPanel.setLayout(new GridBagLayout());
+
+        // GridBagConstraints to control button positioning
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;          // Center horizontally
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.insets = new Insets(10, 0, 10, 0); // Top, left, bottom, right padding
+        // Add the first button
+        gbc.gridy = 0; // Row 0
+        mainMenuPanel.add(buttonPlay, gbc);
+
+        // Add the second button
+        gbc.gridy = 1; // Row 1
+        mainMenuPanel.add(buttonSettings, gbc);
+
+        // Add the third button
+        gbc.gridy = 2; // Row 2
+        mainMenuPanel.add(buttonExit, gbc);
     }
 
     public void initSettingsPanel() {
@@ -169,6 +186,10 @@ public class Window extends JFrame {
         getContentPane().add(a);
         repaint();
         printAll(getGraphics());
+    }
+    public void pauseMenu(){
+        buttonPlay.setText("RESUME");
+        display(mainMenuPanel);
     }
 
     public static void setTimeout(Runnable runnable, int delay){
