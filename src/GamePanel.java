@@ -33,6 +33,7 @@ public class GamePanel extends JPanel implements MouseMotionListener {
     JButton btnPause;
 
     int level;
+    FileHandler fileHandler;
     Window window;
     int seconds = 10;
     Thread countThread;
@@ -43,7 +44,7 @@ public class GamePanel extends JPanel implements MouseMotionListener {
     double fruitCordsX;
     double fruitCordsY;
     Shape starObj;
-    int score = 0;
+    int currentUserScore = 0;
     int wallsPadding = 50;
     int topLeftX = wallsPadding, topLeftY = 60, bottomScreen;
     int fruits = 5;
@@ -52,6 +53,7 @@ public class GamePanel extends JPanel implements MouseMotionListener {
     GamePanel(Window window) {
         this.window = window;
         isReachedLeftEnd = true;
+        fileHandler = new FileHandler();
         btnPause = new JButton("pause");
         btnPause.setBounds(topLeftX + 150,20,70,30);
         setLayout(null);
@@ -135,7 +137,7 @@ public class GamePanel extends JPanel implements MouseMotionListener {
         graphic2d = (Graphics2D) g;
         g.setColor(Color.green);
         g.setFont(new Font("ARIAL", Font.BOLD, 30));
-        g.drawString("Score: " + (score - 1), topLeftX, 30);
+        g.drawString("Score: " + (currentUserScore - 1), topLeftX, 30);
         g.drawString("Level " + level, Window.WIDTH / 2 - 50, 30);
         g.drawString("Timer: " + seconds, Window.WIDTH - wallsPadding - 170, 30);
         ellipse.setFrame(circleXCords, circleYCords, 50, 50);
@@ -189,6 +191,9 @@ public class GamePanel extends JPanel implements MouseMotionListener {
         gameOver = true;
         isGameRunning = false;
         isCountDownTimerRunning = false;
+        if(currentUserScore > fileHandler.getHighScore()){
+            fileHandler.highScoreToFile();
+        }
         window.gameOver();
     }
 
@@ -215,7 +220,7 @@ public class GamePanel extends JPanel implements MouseMotionListener {
                 while (isCountDownTimerRunning) {
                     if (seconds <= 0)  {
                         System.out.println("works");
-                        if(score >= fruits) {
+                        if(currentUserScore >= fruits) {
                             System.out.println("works 2");
                             level = level + 1;
                             fruits = fruits + 5;
@@ -251,7 +256,7 @@ public class GamePanel extends JPanel implements MouseMotionListener {
             fruitCordsX = randomObj.nextInt(topLeftX + 20, Window.WIDTH - wallsPadding - 20);
             fruitCordsY = randomObj.nextInt(topLeftY + 20, bottomScreen - 20);
             starObj = createStar(fruitCordsX, fruitCordsY, 10, 20, 10, 50);
-            score += 1;
+            currentUserScore += 1;
             isFruitEaten = false;
         }
         if (starObj.intersects(playerX, playerY, PLAYER_WIDTH, PLAYER_HEIGHT)) {

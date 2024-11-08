@@ -1,5 +1,3 @@
-import org.w3c.dom.ls.LSOutput;
-
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
@@ -22,10 +20,12 @@ public class Window extends JFrame {
     BoxLayout layout;
     Window windowObj;
     JButton buttonPlay;
+    FileHandler fileHandler;
 
     Window() {
         //the panels
         windowObj = this;
+        fileHandler = new FileHandler();
         mainMenuPanel = new JPanel();
         settingsPanel = new JPanel();
         gameOverPanel = new JPanel();
@@ -72,6 +72,7 @@ public class Window extends JFrame {
     }
 
     public void gameOver(){
+
         display(gameOverPanel);
     }
 
@@ -83,7 +84,7 @@ public class Window extends JFrame {
         //jlabels high score
         highScore.setForeground(Color.ORANGE);
         highScore.setFont(new Font("ARIAL", Font.BOLD, 25));
-        highScore.setText("HIGH SCORE: " + gamePanel.score);
+        highScore.setText("HIGH SCORE: " + fileHandler.getHighScore());
         buttonPlay = new JButton();
         JButton buttonSettings = new JButton();
         JButton buttonExit = new JButton();
