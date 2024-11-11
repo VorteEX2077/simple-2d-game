@@ -55,7 +55,7 @@ public class GamePanel extends JPanel implements MouseMotionListener {
         isReachedLeftEnd = true;
         fileHandler = new FileHandler();
         btnPause = new JButton("pause");
-        btnPause.setBounds(topLeftX + 150,20,70,30);
+        btnPause.setBounds(topLeftX + 25,30,70,30);
         setLayout(null);
         btnPause.addActionListener(new ActionListener() {
             @Override
@@ -192,7 +192,7 @@ public class GamePanel extends JPanel implements MouseMotionListener {
         isGameRunning = false;
         isCountDownTimerRunning = false;
         if(currentUserScore > fileHandler.getHighScore()){
-            fileHandler.highScoreToFile();
+            fileHandler.highScoreToFile(currentUserScore);
         }
         window.gameOver();
     }

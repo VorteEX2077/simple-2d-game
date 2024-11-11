@@ -2,39 +2,43 @@ import java.io.*;
 
 public class FileHandler {
     File fileObj;
-    private int score2;
+    public int scoreFromFile;
     BufferedReader bufferedReader;
+    BufferedWriter bufferedWriter;
     FileHandler(){
-        try {
-            fileObj = new File("safe_file.txt");
-            bufferedReader = new BufferedReader(new FileReader(fileObj));
-
-            if(fileObj.exists()){
-                readFile();
-            }
-            else{
-                boolean isFileCreated = fileObj.createNewFile();
-            }
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-
+            readFile();
     }
 
-    public void highScoreToFile(){
-        // TODO: Write hight scroe to the file.
+    public void highScoreToFile(int hScore){
+        System.out.println("writing to file:" + hScore  + " " + scoreFromFile);
+        if (hScore > scoreFromFile){
+            try {
+                bufferedWriter = new BufferedWriter(new FileWriter("safe_file.txt"));
+                bufferedWriter.write("" + hScore);
+                bufferedWriter.flush();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        // TODO: Write high score to the file.
         // TODO: save settings to file
     }
 
     public int getHighScore() {
-        return score2;
+        readFile();
+        return scoreFromFile;
     }
 
     private void readFile(){
         try {
-        score2 = Integer.parseInt(bufferedReader.readLine());
+            bufferedReader = new BufferedReader(new FileReader("safe_file.txt"));
+            String line = bufferedReader.readLine();
+            if(line == null){
+                scoreFromFile = 0;
+            }
+            else{
+                scoreFromFile = Integer.parseInt(line);
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

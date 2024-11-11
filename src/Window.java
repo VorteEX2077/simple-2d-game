@@ -198,6 +198,7 @@ public class Window extends JFrame {
     public void pauseMenu(){
         buttonPlay.setText("RESUME");
         display(mainMenuPanel);
+        highScore.setText("HIGH SCORE: " + String.valueOf(fileHandler.getHighScore()));
     }
 
     public static void setTimeout(Runnable runnable, int delay){
