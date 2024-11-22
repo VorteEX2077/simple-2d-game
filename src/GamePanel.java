@@ -1,14 +1,12 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionListener;
+import java.awt.event.*;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Path2D;
+import java.util.Objects;
 import java.util.Random;
 
-public class GamePanel extends JPanel implements MouseMotionListener {
+public class GamePanel extends JPanel implements MouseMotionListener, KeyListener {
 
     Random random = new Random();
     String circleCollision;
@@ -30,7 +28,7 @@ public class GamePanel extends JPanel implements MouseMotionListener {
     boolean isReachedTop = true;
     boolean isCountDownTimerRunning;
     Ellipse2D ellipse;
-    JButton btnPause;
+
 
     int level;
     FileHandler fileHandler;
@@ -48,24 +46,17 @@ public class GamePanel extends JPanel implements MouseMotionListener {
     int wallsPadding = 50;
     int topLeftX = wallsPadding, topLeftY = 60, bottomScreen;
     int fruits = 5;
+    boolean isMagnetismOn;
 
     //constructor of GamePanel
     GamePanel(Window window) {
         this.window = window;
         isReachedLeftEnd = true;
         fileHandler = new FileHandler();
-        btnPause = new JButton("pause");
-        btnPause.setBounds(topLeftX + 25,30,70,30);
+        setFocusable(true);
+        requestFocus();
+        addKeyListener(this);
         setLayout(null);
-        btnPause.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                isGameRunning = false;
-                isCountDownTimerRunning = false;
-                window.pauseMenu();
-            }
-        });
-        add(btnPause);
         randomObj = new Random();
         circleXCords = Window.WIDTH / 2;
         level = 1;
@@ -150,6 +141,22 @@ public class GamePanel extends JPanel implements MouseMotionListener {
         bottomScreen = Window.HEIGHT - 80;
         setBackground(Color.black);
 
+        if(isMagnetismOn){
+            if(fruitCordsX > playerX){
+                fruitCordsX = fruitCordsX - 10;
+            }
+            if(fruitCordsX < playerX){
+                fruitCordsX = fruitCordsX + 10;
+            }
+            if(fruitCordsY > playerY){
+                fruitCordsY = fruitCordsY - 10;
+            }
+            if(fruitCordsY < playerY){
+                fruitCordsY = fruitCordsY + 10;
+            }
+            starObj = createStar(fruitCordsX, fruitCordsY, 10, 20, 10, 50);
+        }
+
 
         //sides
         g.setColor(Color.red);
@@ -196,6 +203,13 @@ public class GamePanel extends JPanel implements MouseMotionListener {
         }
         window.gameOver();
     }
+    public void powerUps(String a){
+        //magnetism
+        if(Objects.equals(a, "magnetism")){
+            System.out.println("Magnet started");
+            isMagnetismOn = true;
+        }
+    }
 
     public void startGame() {
         isGameRunning = true;
@@ -219,9 +233,7 @@ public class GamePanel extends JPanel implements MouseMotionListener {
             public void run() {
                 while (isCountDownTimerRunning) {
                     if (seconds <= 0)  {
-                        System.out.println("works");
                         if(currentUserScore >= fruits) {
-                            System.out.println("works 2");
                             level = level + 1;
                             fruits = fruits + 5;
                             seconds = 10;
@@ -229,10 +241,8 @@ public class GamePanel extends JPanel implements MouseMotionListener {
                         else{
                             stopGame();
                         }
-                        if (lvlSpeed <= 5) {
-                            // TODO: User wins the game: wins permanent trophy and its stored in file (hdd)
+                        if (lvlSpeed >= 5) {
                             // FILE HANDLING IN JAVA
-                        } else {
                             lvlSpeed = lvlSpeed - 1;
                         }
                     } else
@@ -262,7 +272,7 @@ public class GamePanel extends JPanel implements MouseMotionListener {
         if (starObj.intersects(playerX, playerY, PLAYER_WIDTH, PLAYER_HEIGHT)) {
             isFruitEaten = true;
         }
-        graphic2d.fill(starObj);
+        graphic2d.fill(starObj); // This statement actually draw the star
     }
 
     private static Shape createStar(double centerX, double centerY,
@@ -307,5 +317,32 @@ public class GamePanel extends JPanel implements MouseMotionListener {
         if (e.getX() >= topLeftX && e.getX() <= Window.WIDTH - wallsPadding - PLAYER_WIDTH) {
             playerX = e.getX();
         }
+    }
+    public void pauseGame(){
+        isGameRunning = false;
+        isCountDownTimerRunning = false;
+    }
+
+    @Override
+    public void keyTyped(KeyEvent e) {
+
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+        if(e.getKeyCode() == KeyEvent.VK_ESCAPE){
+            pauseGame();
+            window.pauseMenu();
+        }
+        if(e.getKeyCode() == KeyEvent.VK_SPACE){
+
+            window.display(window.powerUpPanel);
+            pauseGame();
+        }
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e) {
+
     }
 }

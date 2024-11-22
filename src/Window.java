@@ -5,6 +5,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.util.Objects;
 
 public class Window extends JFrame {
 
@@ -14,6 +15,7 @@ public class Window extends JFrame {
     JPanel gameOverPanel;
     JPanel mainMenuPanel;
     JPanel settingsPanel;
+    JPanel powerUpPanel;
     JButton restartButton;
     JLabel jLabel;
     JLabel highScore;
@@ -28,6 +30,7 @@ public class Window extends JFrame {
         fileHandler = new FileHandler();
         mainMenuPanel = new JPanel();
         settingsPanel = new JPanel();
+        powerUpPanel = new JPanel();
         gameOverPanel = new JPanel();
         gamePanel = new GamePanel(windowObj); // fIRST oBJECT
 
@@ -40,7 +43,12 @@ public class Window extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 gamePanel = new GamePanel(windowObj); // created a new object gamepanel and named it the same name
                 display(gamePanel);
-                setTimeout(() -> gamePanel.startGame(), 100);
+                setTimeout(() -> {
+                    gamePanel.requestFocus();
+                    gamePanel.setFocusable(true);
+                    gamePanel.requestFocusInWindow();
+                    gamePanel.startGame();
+                }, 100);
             }
         });
         jLabel.setBackground(Color.GREEN);
@@ -52,6 +60,7 @@ public class Window extends JFrame {
         initSettingsPanel();
         initGameOverPanel();
         initMainMenuPanel();
+        initPowerUpPanel();
 
         add(gameOverPanel);
         add(gamePanel);
@@ -79,6 +88,18 @@ public class Window extends JFrame {
     public static void main(String[] args) {
         new Window();
     }
+    public void resumeGame(){
+        display(gamePanel);
+        setTimeout(new Runnable() {
+            @Override
+            public void run() {
+                gamePanel.requestFocus();
+                gamePanel.setFocusable(true);
+                gamePanel.requestFocusInWindow();
+                gamePanel.startGame();
+            }
+        }, 500);
+    }
 
     public void initMainMenuPanel(){
         //jlabels high score
@@ -91,13 +112,7 @@ public class Window extends JFrame {
         buttonPlay.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                display(gamePanel);
-                setTimeout(new Runnable() {
-                    @Override
-                    public void run() {
-                        gamePanel.startGame();
-                    }
-                }, 500);
+               resumeGame();
             }
         });
         buttonSettings.addActionListener(new ActionListener() {
@@ -200,6 +215,99 @@ public class Window extends JFrame {
         display(mainMenuPanel);
         highScore.setText("HIGH SCORE: " + String.valueOf(fileHandler.getHighScore()));
     }
+    public void initPowerUpPanel(){
+        Dimension dimension = new Dimension(150, 40);
+        JLabel powerUpTitle = new JLabel("POWER UP SHOP");
+        powerUpTitle.setForeground(Color.YELLOW);
+        powerUpTitle.setFont(new Font("ARIAL", Font.BOLD, 25));
+        powerUpPanel.setBackground(Color.black);
+
+        //buttons back, power ups
+        JButton backButton = new JButton("RESUME");
+        JButton button1 = new JButton("DOUBLE POINTS");
+        JButton button2 = new JButton("MAGNETISM");
+
+//        powerUpPanel.add(backButton);
+//        powerUpPanel.add(powerUpTitle);
+        backButton.addActionListener(e -> resumeGame());
+
+        // Set layout for the main frame
+        powerUpPanel.setLayout(new BorderLayout());
+
+        // Top panel for the title
+        JPanel topPanel = new JPanel();
+        topPanel.setBackground(Color.black);
+        JLabel titleLabel = new JLabel("POWER UP SHOP");
+        titleLabel.setForeground(Color.yellow);
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 25));
+        topPanel.add(titleLabel);
+
+        // Left panel for buttons
+        JPanel leftPanel = new JPanel();
+        leftPanel.setBackground(Color.black);
+        leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS)); // 2 buttons in a column
+        JButton buyButton1 = new JButton("BUY DOUBLE POINTS FOR: 10 POINTS");
+        JButton buyButton2 = new JButton("BUY MAGNETISM FOR: 20 POINTS");
+
+        //change dimensions (sizes)
+        button1.setPreferredSize(dimension);
+        button1.setMinimumSize(dimension);
+        button1.setMaximumSize(dimension);
+        button2.setPreferredSize(dimension);
+        button2.setMinimumSize(dimension);
+        button2.setMaximumSize(dimension);
+
+        buyButton1.setPreferredSize(dimension);
+        buyButton1.setMinimumSize(dimension);
+        buyButton1.setMaximumSize(dimension);
+//        button1.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+//        button2.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        leftPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+        leftPanel.add(button1);
+        leftPanel.add(Box.createRigidArea(new Dimension(50, 20)));
+        leftPanel.add(button2);
+        topPanel.add(backButton);
+
+        buyButton1.addActionListener(e -> gamePanel.powerUps("double points"));
+        buyButton2.addActionListener(e -> gamePanel.powerUps("magnetism"));
+
+        // Right panel with CardLayout for switching content
+        JPanel rightPanel = new JPanel(new CardLayout());
+        JPanel panel1 = new JPanel(new GridLayout(2, 1, 10, 10));
+        panel1.setBackground(Color.BLACK);
+        panel1.add(new JLabel("This is Panel 1"));
+        panel1.add(buyButton1, BorderLayout.CENTER);
+        JPanel panel2 = new JPanel();
+        panel2.setBackground(Color.BLACK);
+        panel2.add(new JLabel("This is Panel 2"));
+        panel2.add(buyButton2);
+
+        // Add panels to the CardLayout
+        rightPanel.add(panel1, "Panel 1");
+        rightPanel.add(panel2, "Panel 2");
+
+        // Add action listeners to buttons
+        button1.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                CardLayout cl = (CardLayout) rightPanel.getLayout();
+                cl.show(rightPanel, "Panel 1");
+            }
+        });
+        button2.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                CardLayout cl = (CardLayout) rightPanel.getLayout();
+                cl.show(rightPanel, "Panel 2");
+            }
+        });
+
+        // Add panels to the main frame
+        powerUpPanel.add(topPanel, BorderLayout.NORTH);
+        powerUpPanel.add(leftPanel, BorderLayout.WEST);
+        powerUpPanel.add(rightPanel, BorderLayout.CENTER);
+    }
+
 
     public static void setTimeout(Runnable runnable, int delay){
         new Thread(() -> {
