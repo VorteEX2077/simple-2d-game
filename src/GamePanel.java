@@ -3,31 +3,26 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Path2D;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 
 public class GamePanel extends JPanel implements MouseMotionListener, KeyListener {
 
-    Random random = new Random();
     String circleCollision;
-    final int PLAYER_WIDTH = 30;
-    final int PLAYER_HEIGHT = 30;
-    final int Circle_Height_Width = 50;
+    int PLAYER_WIDTH = 30;
+    int PLAYER_HEIGHT = 30;
+    int Circle_Height_Width = 50;
 
-    int deltaDirection;
-    int speed;
-    int circleYCords;
-    int circleXCords;
     int playerX;
     int playerY;
     boolean gameOver;
-    boolean isReachedRightEnd;
-    boolean isReachedLeftEnd;
+
     boolean isGameRunning;
-    boolean isReachedBottom;
-    boolean isReachedTop = true;
+
     boolean isCountDownTimerRunning;
-    Ellipse2D ellipse;
+    //Ellipse2D ellipse;
 
 
     int level;
@@ -45,117 +40,154 @@ public class GamePanel extends JPanel implements MouseMotionListener, KeyListene
     int currentUserScore = 0;
     int wallsPadding = 50;
     int topLeftX = wallsPadding, topLeftY = 60, bottomScreen;
-    int fruits = 5;
     boolean isMagnetismOn;
+    boolean isFreezeOn;
+    int scoreFromFruit = 1;
+    int magnetSpeed = 30;
+    Boolean isMagnetBought = false;
+    boolean isFreezeBought = false;
+    boolean isDoublePointsBought = false;
+    JButton scoreBtn = new JButton();
+    JButton lvlBtn = new JButton();
+    JButton magnetBtn = new JButton();
+
+    Font btnFont = new Font("ARIAL", Font.BOLD, 20);
+    int backgroundFiller = 35;
+    String skins = "green";
+    Circle enemy1, enemy2, enemy3;
+    List<Circle> listOfCircles = new ArrayList<>();
 
     //constructor of GamePanel
     GamePanel(Window window) {
         this.window = window;
-        isReachedLeftEnd = true;
+
         fileHandler = new FileHandler();
-        setFocusable(true);
-        requestFocus();
-        addKeyListener(this);
-        setLayout(null);
+        //setLayout(null);
         randomObj = new Random();
-        circleXCords = Window.WIDTH / 2;
         level = 1;
-        circleYCords = 75;
-//        System.out.println(circleXCords);
-        ellipse = new Ellipse2D.Float(circleXCords, circleYCords, 50, 50);
-        speed = 5;
-        deltaDirection = 5;
+        //ellipse = new Ellipse2D.Float(circleXCords, circleYCords, 50, 50);
         circleCollision = "BOTTOM";
         playerX = 400 - PLAYER_WIDTH;
         playerY = 300 - PLAYER_HEIGHT;
         lvlSpeed = 35;
         isFruitEaten = true;
         isGameRunning = true;
+        initPanels();
+        enemy1 = new Circle(Color.PINK, Circle_Height_Width);
+        enemy2 = new Circle(Color.CYAN, Circle_Height_Width);
+        enemy3 = new Circle(Color.yellow, Circle_Height_Width);
+        listOfCircles.add(enemy1);
+        listOfCircles.add(enemy2);
+        listOfCircles.add(enemy3);
+
+        setFocusable(true);
+        requestFocus();
+        addKeyListener(this);
         addMouseMotionListener(this);
+
+        // Use BoxLayout to position panels horizontally without stretching
+        setBackground(Color.black);
+        setLayout(new BoxLayout(this,BoxLayout.X_AXIS));
+
+        // Create the first panel with two buttons
+        //add(testLabel);
     }
 
+    private void initPanels(){
 
-    public void ballMovement() {
-        if (isReachedBottom) {
-            circleYCords = circleYCords - speed;// Going UP
-            if (circleYCords <= topLeftY) {
-                isReachedBottom = false;
-                isReachedTop = true;
-                changeSpeedAndDirection(); // method call
-            }
-            if (isReachedRightEnd) {
-                circleXCords = circleXCords - deltaDirection;
-            }
-            if (isReachedLeftEnd) {
-                circleXCords = circleXCords + deltaDirection;
-            }
-        }
-        if (isReachedTop) {
-            circleYCords = circleYCords + speed;   // GOING Down
-            if (circleYCords >= bottomScreen - Circle_Height_Width - 5) {
-                isReachedBottom = true;
-                isReachedTop = false;
-                changeSpeedAndDirection();
-            }
-            if (isReachedRightEnd) {
-                circleXCords = circleXCords - deltaDirection;
-            }
-            if (isReachedLeftEnd) {
-                circleXCords = circleXCords + deltaDirection;
-            }
-        }
-        if (circleXCords >= Window.WIDTH - wallsPadding - Circle_Height_Width) {
-            isReachedRightEnd = true;
-            isReachedLeftEnd = false;
-            changeSpeedAndDirection();
-        }
-        if (isReachedRightEnd) {
-            circleXCords = circleXCords - deltaDirection;
-        }
-        if (circleXCords <= topLeftX) {
-            isReachedLeftEnd = true;
-            isReachedRightEnd = false;
-            changeSpeedAndDirection();
-        }
-        if (isReachedLeftEnd) {
-            circleXCords = circleXCords + deltaDirection;
-        }
+        JPanel panel1 = new JPanel();
+        panel1.setLayout(new FlowLayout(FlowLayout.LEFT)); // Align buttons to the left
+        panel1.setBorder(BorderFactory.createEmptyBorder(10, topLeftX, 10, 10)); // Add padding
+        scoreBtn.setForeground(Color.green);
+        lvlBtn.setForeground(Color.green);
+        scoreBtn.setFont(btnFont);
+        lvlBtn.setFont(btnFont);
+        makeCircular(scoreBtn);
+        makeCircular(lvlBtn);
+
+        panel1.add(scoreBtn, BoxLayout.X_AXIS);
+        panel1.add(lvlBtn);
+        panel1.setOpaque(false);
+        panel1.setPreferredSize(new Dimension(150, 100));
+        // Create the second panel with one button
+        JPanel panel2 = new JPanel();
+        panel2.setLayout(new FlowLayout(FlowLayout.RIGHT)); // Align buttons to the left
+        panel2.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 30)); // Add padding
+        panel2.setPreferredSize(new Dimension(150, 100));
+        makeCircular(magnetBtn);
+        magnetBtn.setText("M");
+        magnetBtn.setFont(btnFont);
+        magnetBtn.setPreferredSize(new Dimension(50, 35));
+        panel2.add(magnetBtn);
+        panel2.setOpaque(false); // This method will make the panel's background transparent
+        // Add panels to the frame
+        add(panel1);
+        add(panel2);
+    }
+
+    private void makeCircular(JButton button) {
+        button.setPreferredSize(new Dimension(100, 35));
+        button.setContentAreaFilled(false);
+        button.setFocusPainted(false);
+        button.setBorder(BorderFactory.createLineBorder(Color.WHITE));
+
+        button.setOpaque(false);
+        //button.addActionListener(e -> System.out.println("Button clicked!"));
+        button.setBorderPainted(true);
     }
 
     @Override
     public void paint(Graphics g) {
         super.paint(g);
+
+        setBackground(Color.black);
+
         graphic2d = (Graphics2D) g;
-        g.setColor(Color.green);
-        g.setFont(new Font("ARIAL", Font.BOLD, 30));
-        g.drawString("Score: " + (currentUserScore - 1), topLeftX, 30);
-        g.drawString("Level " + level, Window.WIDTH / 2 - 50, 30);
-        g.drawString("Timer: " + seconds, Window.WIDTH - wallsPadding - 170, 30);
-        ellipse.setFrame(circleXCords, circleYCords, 50, 50);
+        for(Circle circle : listOfCircles) {
+            if(!gameOver) circle.ballMovement();
+            graphic2d.setColor(circle.getColor());
+            graphic2d.fillOval(circle.getX(), circle.getY(), Circle_Height_Width,Circle_Height_Width);
+        }
+
+        //g.setColor(Color.green);
+        //g.setFont(new Font("ARIAL", Font.BOLD, 30));
+        scoreBtn.setText(String.valueOf(currentUserScore - 1));
+        lvlBtn.setText("LVL " + level);
+        //g.drawString("Score: " + (currentUserScore - 1), topLeftX, 30);
+        //g.drawString("Level " + level, Window.WIDTH / 2 - 50, 30);
+        //g.drawString("Timer: " + seconds, Window.WIDTH - wallsPadding - 170, 30);
+
+       // ellipse.setFrame(circleXCords, circleYCords, 50, 50);
         //player and ball collision check
-        gameOver = ellipse.intersects(playerX, playerY, PLAYER_WIDTH, PLAYER_HEIGHT);
-        //collect the fruits
-        g.drawString("Collect " + fruits +  " fruits", Window.WIDTH / 2 - 100, 55);
+        gameOver = false;
+        //gameOver = ellipse.intersects(playerX, playerY, PLAYER_WIDTH, PLAYER_HEIGHT);
 
         //g.drawLine(20, 500, circleXCords, circleYCords);
         bottomScreen = Window.HEIGHT - 80;
-        setBackground(Color.black);
 
-        if(isMagnetismOn){
-            if(fruitCordsX > playerX){
-                fruitCordsX = fruitCordsX - 10;
+        if (isMagnetismOn) {
+            if (fruitCordsX > playerX) {
+                fruitCordsX = fruitCordsX - magnetSpeed;
             }
-            if(fruitCordsX < playerX){
-                fruitCordsX = fruitCordsX + 10;
+            if (fruitCordsX < playerX) {
+                fruitCordsX = fruitCordsX + magnetSpeed;
             }
-            if(fruitCordsY > playerY){
-                fruitCordsY = fruitCordsY - 10;
+            if (fruitCordsY > playerY) {
+                fruitCordsY = fruitCordsY - magnetSpeed;
             }
-            if(fruitCordsY < playerY){
-                fruitCordsY = fruitCordsY + 10;
+            if (fruitCordsY < playerY) {
+                fruitCordsY = fruitCordsY + magnetSpeed;
             }
             starObj = createStar(fruitCordsX, fruitCordsY, 10, 20, 10, 50);
+
+            if(backgroundFiller < 15) g.setColor(Color.red);
+            else g.setColor(Color.green);
+            Point a = SwingUtilities.convertPoint(magnetBtn.getParent(), magnetBtn.getLocation(), window);
+            g.fillRect(a.x - 8, magnetBtn.getY() + magnetBtn.getHeight(), magnetBtn.getWidth(),-backgroundFiller);
         }
+
+
+        //System.out.println(magnetBtn.getX() + " " + magnetBtn.getY());
 
 
         //sides
@@ -168,17 +200,25 @@ public class GamePanel extends JPanel implements MouseMotionListener, KeyListene
         graphic2d.drawLine(topLeftX, topLeftY, topLeftX, bottomScreen);//LEFT
 
         //will generate a fruit in a random area
-        fruitGenerator(g);
+        starGenerator(g);
 
         //ball movement
         if (!gameOver) {
-            g.setColor(Color.red);
-            g.fillOval(circleXCords, circleYCords, Circle_Height_Width, Circle_Height_Width);
-            ballMovement();
+            if (isFreezeOn){
+                g.setColor(Color.BLUE);
+            }
+            else{g.setColor(Color.red);}
+            //g.fillOval(circleXCords, circleYCords, Circle_Height_Width, Circle_Height_Width);
+//            if(level >= 5 && Window.WIDTH == 1920 && Window.HEIGHT == 1080)
+//                g.fillOval(circle2XCords, circle2YCords, Circle_Height_Width, Circle_Height_Width);
 
             //player
-            g.setColor(Color.green);
-            g.fillRect(playerX, playerY, PLAYER_WIDTH, PLAYER_HEIGHT);
+            if (skins == "green") {g.setColor(Color.green);}
+            else if(skins == "purple") {g.setColor(Color.MAGENTA);}
+            else if(skins == "blue"){g.setColor(Color.CYAN);}
+            else if (skins == "white") {g.setColor(Color.WHITE);}
+            else {g.setColor(Color.green);}
+              g.fillRect(playerX, playerY, PLAYER_WIDTH, PLAYER_HEIGHT);
             //System.out.println(playerX + ", " + playerY);
 
         }
@@ -188,26 +228,32 @@ public class GamePanel extends JPanel implements MouseMotionListener, KeyListene
         }
     }
 
-    // this is a method definition
-    public void changeSpeedAndDirection() {
-        speed = random.nextInt(10, 15);
-        deltaDirection = random.nextInt(5, 10);
-    }
-
-    public void stopGame(){
+    public void stopGame() {
         gameOver = true;
         isGameRunning = false;
         isCountDownTimerRunning = false;
-        if(currentUserScore > fileHandler.getHighScore()){
+        if (currentUserScore > fileHandler.getHighScore()) {
             fileHandler.highScoreToFile(currentUserScore);
         }
         window.gameOver();
     }
-    public void powerUps(String a){
+
+    public void powerUps(String a) {
         //magnetism
-        if(Objects.equals(a, "magnetism")){
-            System.out.println("Magnet started");
-            isMagnetismOn = true;
+        if (Objects.equals(a, "magnetism") && currentUserScore >= 20 ) {
+            currentUserScore = currentUserScore - 20;
+            isMagnetBought = true;
+        } else {
+            // TODO: POP up message to show if score is not enough
+            isMagnetBought = false;
+        }
+        if (Objects.equals(a, "double points") && currentUserScore >= 1) {
+            currentUserScore = currentUserScore - 10;
+            isDoublePointsBought = true;
+        }
+        if (Objects.equals(a, "freeze") && currentUserScore >= 20){
+            currentUserScore = currentUserScore - 20;
+            isFreezeBought = true;
         }
     }
 
@@ -232,15 +278,10 @@ public class GamePanel extends JPanel implements MouseMotionListener, KeyListene
             @Override
             public void run() {
                 while (isCountDownTimerRunning) {
-                    if (seconds <= 0)  {
-                        if(currentUserScore >= fruits) {
-                            level = level + 1;
-                            fruits = fruits + 5;
-                            seconds = 10;
-                        }
-                        else{
-                            stopGame();
-                        }
+                    if (seconds <= 0) {
+                        level = level + 1;
+                        seconds = 10;
+
                         if (lvlSpeed >= 5) {
                             // FILE HANDLING IN JAVA
                             lvlSpeed = lvlSpeed - 1;
@@ -259,14 +300,14 @@ public class GamePanel extends JPanel implements MouseMotionListener, KeyListene
         countThread.start();
     }
 
-    public void fruitGenerator(Graphics g) {
+    public void starGenerator(Graphics g) {
         g.setColor(Color.YELLOW);
         //System.out.println(fruitCordsX + "," + fruitCordsY);
         if (isFruitEaten) {
             fruitCordsX = randomObj.nextInt(topLeftX + 20, Window.WIDTH - wallsPadding - 20);
             fruitCordsY = randomObj.nextInt(topLeftY + 20, bottomScreen - 20);
             starObj = createStar(fruitCordsX, fruitCordsY, 10, 20, 10, 50);
-            currentUserScore += 1;
+            currentUserScore += scoreFromFruit;
             isFruitEaten = false;
         }
         if (starObj.intersects(playerX, playerY, PLAYER_WIDTH, PLAYER_HEIGHT)) {
@@ -318,7 +359,8 @@ public class GamePanel extends JPanel implements MouseMotionListener, KeyListene
             playerX = e.getX();
         }
     }
-    public void pauseGame(){
+
+    public void pauseGame() {
         isGameRunning = false;
         isCountDownTimerRunning = false;
     }
@@ -330,14 +372,60 @@ public class GamePanel extends JPanel implements MouseMotionListener, KeyListene
 
     @Override
     public void keyPressed(KeyEvent e) {
-        if(e.getKeyCode() == KeyEvent.VK_ESCAPE){
+
+        if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
             pauseGame();
             window.pauseMenu();
         }
-        if(e.getKeyCode() == KeyEvent.VK_SPACE){
+        if (e.getKeyCode() == KeyEvent.VK_SPACE) {
 
             window.display(window.powerUpPanel);
             pauseGame();
+        }
+        if (e.getKeyCode() == KeyEvent.VK_1 && isMagnetBought){
+            isMagnetismOn = true;
+            isMagnetBought = false;
+            // WE HAVE TO START THE TIMER OVER HERE
+            GameTimer gameTimer = new GameTimer(new GameTimer.timerListener() {
+                @Override
+                public void timerOver() {
+                    isMagnetismOn = false;
+                }
+
+                @Override
+                public void clockTick() {
+                    backgroundFiller = backgroundFiller - 3;
+                }
+            });
+        }
+        if (e.getKeyCode() == KeyEvent.VK_2 && isDoublePointsBought){
+            isDoublePointsBought = false;
+            GameTimer gameTimer = new GameTimer(new GameTimer.timerListener() {
+                @Override
+                public void timerOver() {
+                    scoreFromFruit = 1;
+                }
+
+                @Override
+                public void clockTick() {
+                    scoreFromFruit = 2;
+                }
+            });
+        }
+        if (e.getKeyCode() == KeyEvent.VK_3 && isFreezeBought){
+            isFreezeOn = true;
+            isFreezeBought = false;
+            GameTimer gameTimer = new GameTimer(new GameTimer.timerListener() {
+                @Override
+                public void timerOver() {
+                    isFreezeOn = false;
+                }
+
+                @Override
+                public void clockTick() {
+
+                }
+            });
         }
     }
 

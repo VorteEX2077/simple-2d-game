@@ -5,7 +5,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.util.Objects;
+import java.io.IOException;
 
 public class Window extends JFrame {
 
@@ -65,10 +65,11 @@ public class Window extends JFrame {
         add(gameOverPanel);
         add(gamePanel);
         add(mainMenuPanel); // attaching Main menu panel to window
+        pack();
         setSize(800, 600);
         setBackground(Color.red);
         setVisible(true);
-        //setResizable(false);
+        setResizable(false);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
     }
     public void initGameOverPanel(){
@@ -155,47 +156,80 @@ public class Window extends JFrame {
     }
 
     public void initSettingsPanel() {
-        JCheckBox checkBox = new JCheckBox();
-        // JLabel of checkbox parameter customisation
-        JLabel checkBoxSound = new JLabel("Sound:");
-        checkBoxSound.setForeground(Color.ORANGE);
-        checkBoxSound.setFont(new Font("ARIAL", Font.BOLD, 20));
-
         //ComaBox initilisation + customisation
-        JComboBox comboBox = new JComboBox<>();;
-        JLabel comboBoxLabel = new JLabel("screen resolution:");
-        comboBox.addItemListener(new ItemListener() {
+        JComboBox comboBox1 = new JComboBox<>();
+        JComboBox comoBox2 = new JComboBox<>();
+        JLabel comboBoxLabel1 = new JLabel("screen resolution:");
+        JLabel comboBoxLabel2 = new JLabel("Skins");
+        comboBoxLabel2.setForeground(Color.YELLOW);
+        comboBoxLabel2.setFont(new Font("ARIAL", Font.BOLD, 20));
+        comoBox2.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                if (e.getStateChange() == ItemEvent.SELECTED) {
+                    if(comoBox2.getSelectedItem() == "green")
+                        gamePanel.skins = "green";
+                    else if (comoBox2.getSelectedItem() == "purple" && fileHandler.getHighScore() >= 100) {
+                        gamePanel.skins = "purple";
+                    } else if (comoBox2.getSelectedItem() == "blue" && fileHandler.getHighScore() >= 50) {
+                        gamePanel.skins = "blue";
+                    } else if (comoBox2.getSelectedItem() == "white" && fileHandler.getHighScore() >=25) {
+                        gamePanel.skins = "white";
+                    }
+                }
+            }
+        });
+        comboBox1.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent e) {
                if(e.getStateChange() == ItemEvent.SELECTED) {
-                   if(comboBox.getSelectedItem() == "800 x 600") {
+                   if(comboBox1.getSelectedItem() == "800 x 600") {
                        WIDTH = 800; HEIGHT = 600;
-                       setSize(WIDTH, HEIGHT);
-                   }
-                   else if (comboBox.getSelectedItem() == "1280 x 720") {
-                       WIDTH = 1280; HEIGHT = 720;
-                       setSize(WIDTH, HEIGHT);
-                   } else if (comboBox.getSelectedItem() == "1920 x 1080") {
-                       WIDTH = 1920; HEIGHT = 1080;
+//                      try {
+//                          fileHandler.resToFile("800 x 600");
+//                      } catch (IOException ex) {
+//                          throw new RuntimeException(ex);
+//                      }
+                    setSize(WIDTH, HEIGHT);
+                }
+                else if (comboBox1.getSelectedItem() == "1280 x 720") {
+                    WIDTH = 1280; HEIGHT = 720;
+//                      try {
+//                          fileHandler.resToFile("1280 x 720");
+//                      } catch (IOException ex) {
+//                          throw new RuntimeException(ex);
+//                      }
+                    setSize(WIDTH, HEIGHT);
+                } else if (comboBox1.getSelectedItem() == "1920 x 1080") {
+                    WIDTH = 1920; HEIGHT = 1080;
+//                      try {
+//                          fileHandler.resToFile("1920 x 1080");
+//                      } catch (IOException ex) {
+//                          throw new RuntimeException(ex);
+//                      }
                        setSize(WIDTH,HEIGHT);
                    }
                }
             }
 
         });
-        comboBox.addItem("800 x 600");
-        comboBox.addItem("1280 x 720");
-        comboBox.addItem("1920 x 1080");
-        comboBoxLabel.setForeground(Color.ORANGE);
-        comboBoxLabel.setFont(new Font("ARIAL", Font.BOLD, 20));
+        comoBox2.addItem("green");
+        comoBox2.addItem("purple");
+        comoBox2.addItem("blue");
+        comoBox2.addItem("white");
+        comboBox1.addItem("800 x 600");
+        comboBox1.addItem("1280 x 720");
+        comboBox1.addItem("1920 x 1080");
+        comboBoxLabel1.setForeground(Color.YELLOW);
+        comboBoxLabel1.setFont(new Font("ARIAL", Font.BOLD, 20));
         //back button + adding components
         JButton backButton = new JButton("back");
         settingsPanel.setBackground(Color.black);
         settingsPanel.add(backButton);
-        settingsPanel.add(comboBoxLabel);
-        settingsPanel.add(comboBox);
-        settingsPanel.add(checkBoxSound);
-        settingsPanel.add(checkBox);
+        settingsPanel.add(comboBoxLabel1);
+        settingsPanel.add(comboBox1);
+        settingsPanel.add(comboBoxLabel2);
+        settingsPanel.add(comoBox2);
         backButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -226,9 +260,10 @@ public class Window extends JFrame {
         JButton backButton = new JButton("RESUME");
         JButton button1 = new JButton("DOUBLE POINTS");
         JButton button2 = new JButton("MAGNETISM");
+        JButton button3 = new JButton("FREEZE");
 
-//        powerUpPanel.add(backButton);
-//        powerUpPanel.add(powerUpTitle);
+        powerUpPanel.add(backButton);
+        powerUpPanel.add(powerUpTitle);
         backButton.addActionListener(e -> resumeGame());
 
         // Set layout for the main frame
@@ -245,9 +280,10 @@ public class Window extends JFrame {
         // Left panel for buttons
         JPanel leftPanel = new JPanel();
         leftPanel.setBackground(Color.black);
-        leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS)); // 2 buttons in a column
-        JButton buyButton1 = new JButton("BUY DOUBLE POINTS FOR: 10 POINTS");
+        leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS)); // 3 buttons in a column
+        JButton buyButton1 = new JButton("BUY DOUBLE POINTS FOR: 20 POINTS");
         JButton buyButton2 = new JButton("BUY MAGNETISM FOR: 20 POINTS");
+        JButton buyButton3 = new JButton("BUY FREEZE FOR: 20 points");
 
         //change dimensions (sizes)
         button1.setPreferredSize(dimension);
@@ -256,35 +292,50 @@ public class Window extends JFrame {
         button2.setPreferredSize(dimension);
         button2.setMinimumSize(dimension);
         button2.setMaximumSize(dimension);
+        button3.setPreferredSize(dimension);
+        button3.setMinimumSize(dimension);
+        button3.setMaximumSize(dimension);
 
-        buyButton1.setPreferredSize(dimension);
-        buyButton1.setMinimumSize(dimension);
-        buyButton1.setMaximumSize(dimension);
-//        button1.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-//        button2.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+//        buyButton1.setPreferredSize(dimension);
+//        buyButton1.setMinimumSize(dimension);
+//        buyButton1.setMaximumSize(dimension);
+        button1.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        button2.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        button3.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         leftPanel.add(Box.createRigidArea(new Dimension(0, 20)));
         leftPanel.add(button1);
         leftPanel.add(Box.createRigidArea(new Dimension(50, 20)));
         leftPanel.add(button2);
+        leftPanel.add(Box.createRigidArea(new Dimension(50, 20)));
+        leftPanel.add(button3);
         topPanel.add(backButton);
 
         buyButton1.addActionListener(e -> gamePanel.powerUps("double points"));
         buyButton2.addActionListener(e -> gamePanel.powerUps("magnetism"));
+        buyButton3.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                gamePanel.powerUps("freeze");
+            }
+        });
 
         // Right panel with CardLayout for switching content
         JPanel rightPanel = new JPanel(new CardLayout());
-        JPanel panel1 = new JPanel(new GridLayout(2, 1, 10, 10));
+        JPanel panel1 = new JPanel();
         panel1.setBackground(Color.BLACK);
-        panel1.add(new JLabel("This is Panel 1"));
-        panel1.add(buyButton1, BorderLayout.CENTER);
+        panel1.add(buyButton1);
+        //panel1.add(new JLabel("This is Panel 1"));
         JPanel panel2 = new JPanel();
         panel2.setBackground(Color.BLACK);
-        panel2.add(new JLabel("This is Panel 2"));
         panel2.add(buyButton2);
-
+        //panel2.add(new JLabel("This is Panel 2"));
+        JPanel panel3 = new JPanel();
+        panel3.setBackground(Color.black);
+        panel3.add(buyButton3);
         // Add panels to the CardLayout
         rightPanel.add(panel1, "Panel 1");
         rightPanel.add(panel2, "Panel 2");
+        rightPanel.add(panel3, "Panel 3");
 
         // Add action listeners to buttons
         button1.addActionListener(new ActionListener() {
@@ -299,6 +350,13 @@ public class Window extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 CardLayout cl = (CardLayout) rightPanel.getLayout();
                 cl.show(rightPanel, "Panel 2");
+            }
+        });
+        button3.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                CardLayout cl = (CardLayout) rightPanel.getLayout();
+                cl.show(rightPanel, "Panel 3");
             }
         });
 

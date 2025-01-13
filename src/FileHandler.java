@@ -8,9 +8,8 @@ public class FileHandler {
     FileHandler(){
             readFile();
     }
-
     public void highScoreToFile(int hScore){
-        System.out.println("writing to file:" + hScore  + " " + scoreFromFile);
+        //System.out.println("writing to file:" + hScore  + " " + scoreFromFile);
         if (hScore > scoreFromFile){
             try {
                 bufferedWriter = new BufferedWriter(new FileWriter("safe_file.txt"));
@@ -20,9 +19,20 @@ public class FileHandler {
                 throw new RuntimeException(e);
             }
         }
-        // TODO: Write high score to the file.
         // TODO: save settings to file
     }
+    public void resToFile(String res) throws IOException {
+        if(res == "800 x 600"){
+            bufferedWriter.write("800 x 600");
+        }
+        if(res == "1280 x 720"){
+            bufferedWriter.write("1280 x 720");
+        }
+        if(res == "1920 x 1080"){
+            bufferedWriter.write("1920 x 1080");
+        }
+    }
+
 
     public int getHighScore() {
         readFile();
