@@ -1,57 +1,80 @@
 import java.io.*;
 
 public class FileHandler {
-    File fileObj;
     public int scoreFromFile;
     BufferedReader bufferedReader;
     BufferedWriter bufferedWriter;
-    FileHandler(){
-            readFile();
+    String fileToResolution;
+    String fileToSkin;
+    int heightFromFile;
+    int widthFromFile;
+
+    FileHandler() {
+        heightFromFile = 600;
+        widthFromFile = 800;
+        readFile();
     }
-    public void highScoreToFile(int hScore){
+
+    public void highScoreToFile(int hScore) {
         //System.out.println("writing to file:" + hScore  + " " + scoreFromFile);
-        if (hScore > scoreFromFile){
+        if (hScore > scoreFromFile) {
             try {
-                bufferedWriter = new BufferedWriter(new FileWriter("safe_file.txt"));
-                bufferedWriter.write("" + hScore);
+                bufferedWriter = new BufferedWriter(new FileWriter("save_file.txt"));
+                bufferedWriter.write("" + hScore + "," + fileToResolution);
                 bufferedWriter.flush();
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         }
         // TODO: save settings to file
-    }
-    public void resToFile(String res) throws IOException {
-        if(res == "800 x 600"){
-            bufferedWriter.write("800 x 600");
-        }
-        if(res == "1280 x 720"){
-            bufferedWriter.write("1280 x 720");
-        }
-        if(res == "1920 x 1080"){
-            bufferedWriter.write("1920 x 1080");
-        }
+        System.out.println("data written to file");
     }
 
-
-    public int getHighScore() {
-        readFile();
-        return scoreFromFile;
-    }
-
-    private void readFile(){
+    public void writeToFile(String res, String skin) {
         try {
-            bufferedReader = new BufferedReader(new FileReader("safe_file.txt"));
-            String line = bufferedReader.readLine();
-            if(line == null){
-                scoreFromFile = 0;
-            }
-            else{
-                scoreFromFile = Integer.parseInt(line);
-            }
+            bufferedWriter = new BufferedWriter(new FileWriter("save_file.txt"));
+            bufferedWriter.write(getHighScore() + "," + res + "," + skin);
+            bufferedWriter.flush();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
+
+    public int getHighScore() {
+        return scoreFromFile;
+    }
+
+    public void readFile() {
+        String[] fromFile;
+        File fileObj = new File("save_file.txt");
+        if (fileObj.exists()) {
+            /* READING THE FILE */
+            try {
+                FileReader fileReader = new FileReader(fileObj);
+                bufferedReader = new BufferedReader(fileReader);
+                String line = bufferedReader.readLine();
+                if (line == null) {
+                    scoreFromFile = 0;
+                } else {
+                    fromFile = line.split(",");
+                    scoreFromFile = Integer.parseInt(fromFile[0]);
+                    if (fromFile.length > 1)
+                        fileToResolution = fromFile[1];
+                    if (fromFile.length > 2)
+                        fileToSkin = fromFile[2].trim();
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            if (fileToResolution == null) fileToResolution = "600 x 800";
+            if (fileToResolution.equals("1920 x 1080")) {
+                widthFromFile = 1920;
+                heightFromFile = 1080;
+            } else if (fileToResolution.equals("1280 x 720")) {
+                heightFromFile = 720;
+                widthFromFile = 1280;
+            }
+        }
+    }
 }

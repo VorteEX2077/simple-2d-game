@@ -5,7 +5,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.io.IOException;
 
 public class Window extends JFrame {
 
@@ -23,6 +22,7 @@ public class Window extends JFrame {
     Window windowObj;
     JButton buttonPlay;
     FileHandler fileHandler;
+    String currentResolution;
 
     Window() {
         //the panels
@@ -47,6 +47,7 @@ public class Window extends JFrame {
                     gamePanel.requestFocus();
                     gamePanel.setFocusable(true);
                     gamePanel.requestFocusInWindow();
+                    System.out.println("player colour: " + gamePanel.skins);
                     gamePanel.startGame();
                 }, 100);
             }
@@ -66,13 +67,15 @@ public class Window extends JFrame {
         add(gamePanel);
         add(mainMenuPanel); // attaching Main menu panel to window
         pack();
-        setSize(800, 600);
+        /* SET SIZE */
+        setSize(fileHandler.widthFromFile, fileHandler.heightFromFile);
         setBackground(Color.red);
         setVisible(true);
         setResizable(false);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
     }
-    public void initGameOverPanel(){
+
+    public void initGameOverPanel() {
         layout = new BoxLayout(gameOverPanel, BoxLayout.Y_AXIS);
         gameOverPanel.add(jLabel);
         gameOverPanel.add(restartButton);
@@ -81,15 +84,15 @@ public class Window extends JFrame {
         gameOverPanel.setLayout(layout);
     }
 
-    public void gameOver(){
-
+    public void gameOver() {
         display(gameOverPanel);
     }
 
     public static void main(String[] args) {
         new Window();
     }
-    public void resumeGame(){
+
+    public void resumeGame() {
         display(gamePanel);
         setTimeout(new Runnable() {
             @Override
@@ -102,7 +105,7 @@ public class Window extends JFrame {
         }, 500);
     }
 
-    public void initMainMenuPanel(){
+    public void initMainMenuPanel() {
         //jlabels high score
         highScore.setForeground(Color.ORANGE);
         highScore.setFont(new Font("ARIAL", Font.BOLD, 25));
@@ -113,7 +116,7 @@ public class Window extends JFrame {
         buttonPlay.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-               resumeGame();
+                resumeGame();
             }
         });
         buttonSettings.addActionListener(new ActionListener() {
@@ -157,69 +160,55 @@ public class Window extends JFrame {
 
     public void initSettingsPanel() {
         //ComaBox initilisation + customisation
-        JComboBox comboBox1 = new JComboBox<>();
-        JComboBox comoBox2 = new JComboBox<>();
+        JComboBox screenResComboBox = new JComboBox<>();
+        JComboBox skinsComboBox = new JComboBox<>();
         JLabel comboBoxLabel1 = new JLabel("screen resolution:");
         JLabel comboBoxLabel2 = new JLabel("Skins");
         comboBoxLabel2.setForeground(Color.YELLOW);
         comboBoxLabel2.setFont(new Font("ARIAL", Font.BOLD, 20));
-        comoBox2.addItemListener(new ItemListener() {
+        skinsComboBox.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent e) {
                 if (e.getStateChange() == ItemEvent.SELECTED) {
-                    if(comoBox2.getSelectedItem() == "green")
-                        gamePanel.skins = "green";
-                    else if (comoBox2.getSelectedItem() == "purple" && fileHandler.getHighScore() >= 100) {
-                        gamePanel.skins = "purple";
-                    } else if (comoBox2.getSelectedItem() == "blue" && fileHandler.getHighScore() >= 50) {
-                        gamePanel.skins = "blue";
-                    } else if (comoBox2.getSelectedItem() == "white" && fileHandler.getHighScore() >=25) {
-                        gamePanel.skins = "white";
-                    }
+                    gamePanel.skins = String.valueOf(skinsComboBox.getSelectedItem());
+                    System.out.println(gamePanel.skins + " from window class");
+//                    if( == fileHandler.fileToSkin){
+//
+//                    }
                 }
             }
         });
-        comboBox1.addItemListener(new ItemListener() {
+        screenResComboBox.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent e) {
-               if(e.getStateChange() == ItemEvent.SELECTED) {
-                   if(comboBox1.getSelectedItem() == "800 x 600") {
-                       WIDTH = 800; HEIGHT = 600;
-//                      try {
-//                          fileHandler.resToFile("800 x 600");
-//                      } catch (IOException ex) {
-//                          throw new RuntimeException(ex);
-//                      }
-                    setSize(WIDTH, HEIGHT);
+                if (e.getStateChange() == ItemEvent.SELECTED) {
+                    if (screenResComboBox.getSelectedItem() == "800 x 600") {
+                        WIDTH = 800;
+                        HEIGHT = 600;
+                    } else if (screenResComboBox.getSelectedItem() == "1280 x 720") {
+                        WIDTH = 1280;
+                        HEIGHT = 720;;
+                    } else if (screenResComboBox.getSelectedItem() == "1920 x 1080") {
+                        WIDTH = 1920;
+                        HEIGHT = 1080;
+                    }
+                    currentResolution = String.valueOf(screenResComboBox.getSelectedItem());
+                    setSize(WIDTH,HEIGHT);
                 }
-                else if (comboBox1.getSelectedItem() == "1280 x 720") {
-                    WIDTH = 1280; HEIGHT = 720;
-//                      try {
-//                          fileHandler.resToFile("1280 x 720");
-//                      } catch (IOException ex) {
-//                          throw new RuntimeException(ex);
-//                      }
-                    setSize(WIDTH, HEIGHT);
-                } else if (comboBox1.getSelectedItem() == "1920 x 1080") {
-                    WIDTH = 1920; HEIGHT = 1080;
-//                      try {
-//                          fileHandler.resToFile("1920 x 1080");
-//                      } catch (IOException ex) {
-//                          throw new RuntimeException(ex);
-//                      }
-                       setSize(WIDTH,HEIGHT);
-                   }
-               }
             }
-
         });
-        comoBox2.addItem("green");
-        comoBox2.addItem("purple");
-        comoBox2.addItem("blue");
-        comoBox2.addItem("white");
-        comboBox1.addItem("800 x 600");
-        comboBox1.addItem("1280 x 720");
-        comboBox1.addItem("1920 x 1080");
+        skinsComboBox.addItem("green");
+        skinsComboBox.addItem("purple");
+        skinsComboBox.addItem("blue");
+        skinsComboBox.addItem("white");
+        skinsComboBox.addItem("red");
+        skinsComboBox.addItem("yellow");
+        screenResComboBox.addItem("800 x 600");
+        screenResComboBox.addItem("1280 x 720");
+        screenResComboBox.addItem("1920 x 1080");
+        String resolutionStr = fileHandler.widthFromFile + " x " + fileHandler.heightFromFile;
+        skinsComboBox.setSelectedItem(fileHandler.fileToSkin);
+        screenResComboBox.setSelectedItem(resolutionStr);
         comboBoxLabel1.setForeground(Color.YELLOW);
         comboBoxLabel1.setFont(new Font("ARIAL", Font.BOLD, 20));
         //back button + adding components
@@ -227,29 +216,34 @@ public class Window extends JFrame {
         settingsPanel.setBackground(Color.black);
         settingsPanel.add(backButton);
         settingsPanel.add(comboBoxLabel1);
-        settingsPanel.add(comboBox1);
+        settingsPanel.add(screenResComboBox);
         settingsPanel.add(comboBoxLabel2);
-        settingsPanel.add(comoBox2);
+        settingsPanel.add(skinsComboBox);
         backButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                fileHandler.writeToFile(currentResolution,gamePanel.skins);
                 display(mainMenuPanel);
             }
         });
     }
 
-    public void display(JPanel a){
+    public void display(JPanel a) {
         getContentPane().removeAll();
         getContentPane().add(a);
         repaint();
         printAll(getGraphics());
     }
-    public void pauseMenu(){
+
+    public void pauseMenu() {
         buttonPlay.setText("RESUME");
         display(mainMenuPanel);
-        highScore.setText("HIGH SCORE: " + String.valueOf(fileHandler.getHighScore()));
+        fileHandler.readFile();
+        highScore.setText("HIGH SCORE: "  + String.valueOf(fileHandler.getHighScore()));
+
     }
-    public void initPowerUpPanel(){
+
+    public void initPowerUpPanel() {
         Dimension dimension = new Dimension(150, 40);
         JLabel powerUpTitle = new JLabel("POWER UP SHOP");
         powerUpTitle.setForeground(Color.YELLOW);
@@ -367,13 +361,12 @@ public class Window extends JFrame {
     }
 
 
-    public static void setTimeout(Runnable runnable, int delay){
+    public static void setTimeout(Runnable runnable, int delay) {
         new Thread(() -> {
             try {
                 Thread.sleep(delay);
                 runnable.run();
-            }
-            catch (Exception e){
+            } catch (Exception e) {
                 System.err.println(e);
             }
         }).start();
