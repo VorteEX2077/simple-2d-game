@@ -55,6 +55,12 @@ public class GamePanel extends JPanel implements MouseMotionListener, KeyListene
     String skins;
     Circle enemy1, enemy2, enemy3;
     List<Circle> listOfCircles = new ArrayList<>();
+    private int freezePowerUpValue = ConstantVariables.POWER_UP_INITIAL_VAL;
+    private int magnetismPowerUpValue = ConstantVariables.POWER_UP_INITIAL_VAL;
+    private int doublePointsPowerUPValue = ConstantVariables.POWER_UP_INITIAL_VAL;
+    private int levelsFreezePowerUp;
+    private int levelMagnetismPowerUp;
+    private int levelDoublePoints;
 
     //constructor of GamePanel
     GamePanel(Window window) {
@@ -98,6 +104,16 @@ public class GamePanel extends JPanel implements MouseMotionListener, KeyListene
 
         // Create the first panel with two buttons
         //add(testLabel);
+    }
+
+    public int getDoublePointsPowerUPValue() {
+        return doublePointsPowerUPValue;
+    }
+    public int getMagnetismPowerUpValue() {
+        return magnetismPowerUpValue;
+    }
+    public int getFreezePowerUpValue(){
+        return freezePowerUpValue;
     }
 
     private void initPanels() {
@@ -224,19 +240,22 @@ public class GamePanel extends JPanel implements MouseMotionListener, KeyListene
 
     public void powerUps(String a) {
         //magnetism
-        if (Objects.equals(a, "magnetism") && currentUserScore >= 1) {
-            currentUserScore = currentUserScore - 1;
+        if (Objects.equals(a, "magnetism") && currentUserScore >= magnetismPowerUpValue) {
+            currentUserScore = currentUserScore - magnetismPowerUpValue;
+            magnetismPowerUpValue = magnetismPowerUpValue + ConstantVariables.POWER_UP_INITIAL_VAL;
             isMagnetBought = true;
         } else {
             // TODO: POP up message to show if score is not enough
             isMagnetBought = false;
         }
-        if (Objects.equals(a, "double points") && currentUserScore >= 1) {
-            currentUserScore = currentUserScore - 1;
+        if (Objects.equals(a, "double points") && currentUserScore >= doublePointsPowerUPValue) {
+            currentUserScore = currentUserScore - doublePointsPowerUPValue;
+            doublePointsPowerUPValue = doublePointsPowerUPValue + ConstantVariables.POWER_UP_INITIAL_VAL;
             isDoublePointsBought = true;
         }
-        if (Objects.equals(a, "freeze") && currentUserScore >= 1) {
-            currentUserScore = currentUserScore - 1;
+        if (Objects.equals(a, "freeze") && currentUserScore >= freezePowerUpValue) {
+            currentUserScore = currentUserScore - freezePowerUpValue;
+            freezePowerUpValue = freezePowerUpValue + ConstantVariables.POWER_UP_INITIAL_VAL;
             isFreezeBought = true;
         }
     }

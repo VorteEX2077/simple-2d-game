@@ -23,6 +23,9 @@ public class Window extends JFrame {
     JButton buttonPlay;
     FileHandler fileHandler;
     String currentResolution;
+    JButton buyButton1;
+    JButton buyButton2;
+    JButton buyButton3;
 
     Window() {
         //the panels
@@ -187,13 +190,14 @@ public class Window extends JFrame {
                         HEIGHT = 600;
                     } else if (screenResComboBox.getSelectedItem() == "1280 x 720") {
                         WIDTH = 1280;
-                        HEIGHT = 720;;
+                        HEIGHT = 720;
+                        ;
                     } else if (screenResComboBox.getSelectedItem() == "1920 x 1080") {
                         WIDTH = 1920;
                         HEIGHT = 1080;
                     }
                     currentResolution = String.valueOf(screenResComboBox.getSelectedItem());
-                    setSize(WIDTH,HEIGHT);
+                    setSize(WIDTH, HEIGHT);
                 }
             }
         });
@@ -222,7 +226,7 @@ public class Window extends JFrame {
         backButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                fileHandler.writeToFile(currentResolution,gamePanel.skins);
+                fileHandler.writeToFile(currentResolution, gamePanel.skins);
                 display(mainMenuPanel);
             }
         });
@@ -239,8 +243,14 @@ public class Window extends JFrame {
         buttonPlay.setText("RESUME");
         display(mainMenuPanel);
         fileHandler.readFile();
-        highScore.setText("HIGH SCORE: "  + String.valueOf(fileHandler.getHighScore()));
+        highScore.setText("HIGH SCORE: " + String.valueOf(fileHandler.getHighScore()));
 
+    }
+
+    public void updatePowerUpButtonText() {
+        buyButton1.setText("BUY DOUBLE POINTS FOR: " + gamePanel.getDoublePointsPowerUPValue() + " POINTS");
+        buyButton2.setText("BUY MAGNETISM FOR: " + gamePanel.getMagnetismPowerUpValue() + " POINTS");
+        buyButton3.setText("BUY FREEZE FOR: " + gamePanel.getFreezePowerUpValue() + " POINTS");
     }
 
     public void initPowerUpPanel() {
@@ -256,9 +266,13 @@ public class Window extends JFrame {
         JButton button2 = new JButton("MAGNETISM");
         JButton button3 = new JButton("FREEZE");
 
+
         powerUpPanel.add(backButton);
         powerUpPanel.add(powerUpTitle);
-        backButton.addActionListener(e -> resumeGame());
+        backButton.addActionListener(e -> {
+            resumeGame();
+            updatePowerUpButtonText();
+        });
 
         // Set layout for the main frame
         powerUpPanel.setLayout(new BorderLayout());
@@ -274,10 +288,7 @@ public class Window extends JFrame {
         // Left panel for buttons
         JPanel leftPanel = new JPanel();
         leftPanel.setBackground(Color.black);
-        leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS)); // 3 buttons in a column
-        JButton buyButton1 = new JButton("BUY DOUBLE POINTS FOR: 20 POINTS");
-        JButton buyButton2 = new JButton("BUY MAGNETISM FOR: 20 POINTS");
-        JButton buyButton3 = new JButton("BUY FREEZE FOR: 20 points");
+        leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS));// 3 buttons in a column
 
         //change dimensions (sizes)
         button1.setPreferredSize(dimension);
@@ -304,6 +315,9 @@ public class Window extends JFrame {
         leftPanel.add(button3);
         topPanel.add(backButton);
 
+        buyButton1 = new JButton("BUY DOUBLE POINTS FOR: " + ConstantVariables.POWER_UP_INITIAL_VAL + " POINTS");
+        buyButton2 = new JButton("BUY MAGNETISM FOR: " + ConstantVariables.POWER_UP_INITIAL_VAL + " POINTS");
+        buyButton3 = new JButton("BUY FREEZE FOR: " + ConstantVariables.POWER_UP_INITIAL_VAL + " POINTS");
         buyButton1.addActionListener(e -> gamePanel.powerUps("double points"));
         buyButton2.addActionListener(e -> gamePanel.powerUps("magnetism"));
         buyButton3.addActionListener(new ActionListener() {
