@@ -26,6 +26,9 @@ public class Window extends JFrame {
     JButton buyButton1;
     JButton buyButton2;
     JButton buyButton3;
+    JLabel doublePointsPowerUpLevel = new JLabel();
+    JLabel magnetismPowerUpLevel = new JLabel();
+    JLabel freezePowerUpLevel = new JLabel();
 
     Window() {
         //the panels
@@ -51,6 +54,7 @@ public class Window extends JFrame {
                     gamePanel.setFocusable(true);
                     gamePanel.requestFocusInWindow();
                     System.out.println("player colour: " + gamePanel.skins);
+                    updatePowerUpButtonText();
                     gamePanel.startGame();
                 }, 100);
             }
@@ -251,6 +255,10 @@ public class Window extends JFrame {
         buyButton1.setText("BUY DOUBLE POINTS FOR: " + gamePanel.getDoublePointsPowerUPValue() + " POINTS");
         buyButton2.setText("BUY MAGNETISM FOR: " + gamePanel.getMagnetismPowerUpValue() + " POINTS");
         buyButton3.setText("BUY FREEZE FOR: " + gamePanel.getFreezePowerUpValue() + " POINTS");
+
+        magnetismPowerUpLevel.setText("MAGNETISM POWER UP LEVEL: " + gamePanel.getMagnetismPowerUpValue()/ConstantVariables.POWER_UP_INITIAL_VAL);
+        doublePointsPowerUpLevel.setText("DOUBLE POINTS POWER UP LEVEL: " + gamePanel.getMagnetismPowerUpValue()/ConstantVariables.POWER_UP_INITIAL_VAL);
+        freezePowerUpLevel.setText("FREEZE POWER UP LEVEL: " + gamePanel.getMagnetismPowerUpValue()/ConstantVariables.POWER_UP_INITIAL_VAL);
     }
 
     public void initPowerUpPanel() {
@@ -331,14 +339,20 @@ public class Window extends JFrame {
         JPanel rightPanel = new JPanel(new CardLayout());
         JPanel panel1 = new JPanel();
         panel1.setBackground(Color.BLACK);
+        doublePointsPowerUpLevel.setText("DOUBLE POINTS POWER UP LEVEL: " + gamePanel.getMagnetismPowerUpValue());
+        panel1.add(doublePointsPowerUpLevel);
         panel1.add(buyButton1);
         //panel1.add(new JLabel("This is Panel 1"));
         JPanel panel2 = new JPanel();
         panel2.setBackground(Color.BLACK);
+        magnetismPowerUpLevel.setText("MAGNETISM POWER UP LEVEL: " + gamePanel.getMagnetismPowerUpValue());
+        panel2.add(magnetismPowerUpLevel);
         panel2.add(buyButton2);
         //panel2.add(new JLabel("This is Panel 2"));
         JPanel panel3 = new JPanel();
         panel3.setBackground(Color.black);
+        freezePowerUpLevel.setText("FREEZE POWER UP LEVEL: " + gamePanel.getMagnetismPowerUpValue());
+        panel3.add(freezePowerUpLevel);
         panel3.add(buyButton3);
         // Add panels to the CardLayout
         rightPanel.add(panel1, "Panel 1");

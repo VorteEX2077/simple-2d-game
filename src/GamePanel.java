@@ -41,7 +41,7 @@ public class GamePanel extends JPanel implements MouseMotionListener, KeyListene
     boolean isMagnetismOn;
     boolean isFreezeOn;
     int scoreFromFruit = 1;
-    int magnetSpeed = 30;
+    int magnetSpeed;
     Boolean isMagnetBought = false;
     boolean isFreezeBought = false;
     boolean isDoublePointsBought = false;
@@ -51,16 +51,14 @@ public class GamePanel extends JPanel implements MouseMotionListener, KeyListene
     JButton freezeBtn = new JButton();
 
     Font btnFont = new Font("ARIAL", Font.BOLD, 20);
-    int backgroundFiller = 35;
+    int backgroundFiller = ConstantVariables.BACKGROUND_FILLER;
     String skins;
-    Circle enemy1, enemy2, enemy3;
+    Circle enemy1;
     List<Circle> listOfCircles = new ArrayList<>();
     private int freezePowerUpValue = ConstantVariables.POWER_UP_INITIAL_VAL;
     private int magnetismPowerUpValue = ConstantVariables.POWER_UP_INITIAL_VAL;
     private int doublePointsPowerUPValue = ConstantVariables.POWER_UP_INITIAL_VAL;
-    private int levelsFreezePowerUp;
-    private int levelMagnetismPowerUp;
-    private int levelDoublePoints;
+    int doublePointsVale = 2;
 
     //constructor of GamePanel
     GamePanel(Window window) {
@@ -79,11 +77,11 @@ public class GamePanel extends JPanel implements MouseMotionListener, KeyListene
         isGameRunning = true;
         initPanels();
         enemy1 = new Circle(Color.red, ConstantVariables.CIRCLE_DIMENSIONS);
-        enemy2 = new Circle(Color.blue, ConstantVariables.CIRCLE_DIMENSIONS);
-        enemy3 = new Circle(Color.yellow, ConstantVariables.CIRCLE_DIMENSIONS);
+//        enemy2 = new Circle(Color.blue, ConstantVariables.CIRCLE_DIMENSIONS);
+//        enemy3 = new Circle(Color.yellow, ConstantVariables.CIRCLE_DIMENSIONS);
         listOfCircles.add(enemy1);
-        listOfCircles.add(enemy2);
-        listOfCircles.add(enemy3);
+//        listOfCircles.add(enemy2);
+//        listOfCircles.add(enemy3);
 
         setFocusable(true);
         requestFocus();
@@ -243,6 +241,9 @@ public class GamePanel extends JPanel implements MouseMotionListener, KeyListene
         if (Objects.equals(a, "magnetism") && currentUserScore >= magnetismPowerUpValue) {
             currentUserScore = currentUserScore - magnetismPowerUpValue;
             magnetismPowerUpValue = magnetismPowerUpValue + ConstantVariables.POWER_UP_INITIAL_VAL;
+            if(magnetSpeed <= 50) {
+                magnetSpeed = magnetSpeed + 10;
+            }
             isMagnetBought = true;
         } else {
             // TODO: POP up message to show if score is not enough
@@ -408,6 +409,7 @@ public class GamePanel extends JPanel implements MouseMotionListener, KeyListene
                 @Override
                 public void timerOver() {
                     isMagnetismOn = false;
+                    backgroundFiller = ConstantVariables.BACKGROUND_FILLER;
                 }
 
                 @Override
@@ -422,11 +424,12 @@ public class GamePanel extends JPanel implements MouseMotionListener, KeyListene
                 @Override
                 public void timerOver() {
                     scoreFromFruit = 1;
+                    doublePointsVale = doublePointsVale + 2;
                 }
 
                 @Override
                 public void clockTick() {
-                    scoreFromFruit = 2;
+                    scoreFromFruit = doublePointsVale;
                 }
             });
         }
